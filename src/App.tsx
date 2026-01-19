@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { ArrowRight, Briefcase, Calendar, ChevronDown, Compass, Moon, Sun } from 'lucide-react';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
@@ -62,7 +63,13 @@ function splitLines(text: string) {
   ));
 }
 
-function ThemeSwitch({ themeMode, onToggle }: { themeMode: ThemeMode; onToggle: () => void }) {
+function ThemeSwitch({
+  themeMode,
+  onToggle,
+}: {
+  themeMode: ThemeMode;
+  onToggle: () => void;
+}) {
   const isDark = themeMode === 'dark';
 
   return (
@@ -70,7 +77,7 @@ function ThemeSwitch({ themeMode, onToggle }: { themeMode: ThemeMode; onToggle: 
       type="button"
       role="switch"
       aria-checked={isDark}
-      aria-label="切换深色模式"
+      aria-label={isDark ? '切换为浅色模式' : '切换为深色模式'}
       onClick={onToggle}
       className="group inline-flex items-center justify-center p-2 bg-transparent border-0 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--menu-icon-active)]"
     >
@@ -91,8 +98,63 @@ function MainContent() {
     localStorage.setItem('themeMode', themeMode);
   }, [themeMode]);
 
-  const toggleThemeMode = () => {
-    setThemeMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  const toggleThemeMode = async () => {
+    const wasDark = themeMode === 'dark';
+    const nextMode: ThemeMode = wasDark ? 'light' : 'dark';
+    const prefersReducedMotion =
+      window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+    type StartViewTransition = (updateCallback: () => void) => { ready: Promise<void> };
+    const startViewTransition = (
+      document as unknown as { startViewTransition?: StartViewTransition }
+    ).startViewTransition?.bind(document) as StartViewTransition | undefined;
+
+    const applyThemeMode = (mode: ThemeMode) => {
+      document.documentElement.dataset.theme = mode;
+      localStorage.setItem('themeMode', mode);
+      setThemeMode(mode);
+    };
+
+    if (!startViewTransition || prefersReducedMotion) {
+      applyThemeMode(nextMode);
+      if (!prefersReducedMotion) {
+        document.body
+          .animate([{ opacity: 0.85 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' })
+          .finished.catch(() => {});
+      }
+      return;
+    }
+
+    let transition: { ready: Promise<void> } | undefined;
+    try {
+      transition = startViewTransition(() => {
+        flushSync(() => {
+          applyThemeMode(nextMode);
+        });
+      });
+    } catch {
+      applyThemeMode(nextMode);
+      return;
+    }
+
+    try {
+      await transition.ready;
+      const endRadius = Math.hypot(window.innerWidth, window.innerHeight);
+      document.documentElement.animate(
+        {
+          clipPath: [
+            `circle(0px at ${window.innerWidth}px 0px)`,
+            `circle(${endRadius}px at ${window.innerWidth}px 0px)`,
+          ],
+        },
+        {
+          duration: 1000,
+          easing: 'ease-in-out',
+          pseudoElement: '::view-transition-new(root)',
+        } as unknown as KeyframeAnimationOptions
+      );
+    } catch {
+      void 0;
+    }
   };
 
   const t = useMemo(

@@ -1,6 +1,16 @@
 import { useEffect, useMemo, useState } from 'react';
 import { flushSync } from 'react-dom';
-import { ArrowRight, Briefcase, Calendar, ChevronDown, Compass, Moon, Sun } from 'lucide-react';
+import {
+  ArrowRight,
+  Briefcase,
+  Calendar,
+  ChevronDown,
+  Compass,
+  Globe,
+  Moon,
+  Sun,
+} from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
 type ThemeMode = 'light' | 'dark';
@@ -70,6 +80,7 @@ function ThemeSwitch({
   themeMode: ThemeMode;
   onToggle: () => void;
 }) {
+  const { t: translate } = useTranslation();
   const isDark = themeMode === 'dark';
 
   return (
@@ -77,7 +88,7 @@ function ThemeSwitch({
       type="button"
       role="switch"
       aria-checked={isDark}
-      aria-label={isDark ? '切换为浅色模式' : '切换为深色模式'}
+      aria-label={isDark ? translate('theme.toLight') : translate('theme.toDark')}
       onClick={onToggle}
       className="group inline-flex items-center justify-center p-2 bg-transparent border-0 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--menu-icon-active)]"
     >
@@ -90,13 +101,44 @@ function ThemeSwitch({
   );
 }
 
+function LanguageSwitch({
+  currentLanguage,
+  onToggle,
+}: {
+  currentLanguage: 'zh' | 'en';
+  onToggle: () => void;
+}) {
+  const { t: translate } = useTranslation();
+
+  return (
+    <button
+      type="button"
+      aria-label={
+        currentLanguage === 'zh' ? translate('language.toEnglish') : translate('language.toChinese')
+      }
+      onClick={onToggle}
+      className="group inline-flex items-center justify-center p-2 bg-transparent border-0 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--menu-icon-active)]"
+    >
+      <Globe className="h-4 w-4 text-[var(--menu-icon)] group-hover:text-[var(--menu-icon-active)] transition-colors" />
+    </button>
+  );
+}
+
 function MainContent() {
   const [themeMode, setThemeMode] = useState<ThemeMode>(() => getInitialThemeMode());
+  const { t: translate, i18n } = useTranslation();
 
   useEffect(() => {
     document.documentElement.dataset.theme = themeMode;
     localStorage.setItem('themeMode', themeMode);
   }, [themeMode]);
+
+  const currentLanguage = i18n.language.startsWith('zh') ? 'zh' : 'en';
+
+  useEffect(() => {
+    document.documentElement.lang = currentLanguage === 'zh' ? 'zh-CN' : 'en';
+    localStorage.setItem('language', currentLanguage);
+  }, [currentLanguage]);
 
   const toggleThemeMode = async () => {
     const wasDark = themeMode === 'dark';
@@ -157,133 +199,83 @@ function MainContent() {
     }
   };
 
-  const t = useMemo(
-    () => ({
+  const t = {
       nav: {
-        features: '能力',
-        download: '下载',
-        faq: '常见问题',
-        cta: '下载客户端',
+        features: translate('nav.features'),
+        download: translate('nav.download'),
+        faq: translate('nav.faq'),
+        cta: translate('nav.cta'),
       },
       hero: {
-        titleLine1: '让写作从',
-        titleLine2: '混沌走向',
-        titleAccent: '秩序。',
-        description:
-          '一个简洁而强大的桌面 Markdown 编辑器，专为技术写作打造。公式、代码、图表、表格——组织成可读、可复用、可发布的文档。',
-        primaryCta: '下载客户端',
+        titleLine1: translate('hero.titleLine1'),
+        titleLine2: translate('hero.titleLine2'),
+        titleAccent: translate('hero.titleAccent'),
+        description: translate('hero.description'),
+        primaryCta: translate('hero.primaryCta'),
       },
       problem: {
-        eyebrow: '写作的断层',
-        title: '你在记录。\n但你没有系统。',
-        description:
-          '碎片化的笔记、公式、代码与图表，缺少结构就会变成散落的拼图。Ornata 帮你把这些碎片连接起来，让每一篇文档都有明确的脉络与表达。',
-        highlight: '写得更少混乱，交付更多清晰。',
+        eyebrow: translate('problem.eyebrow'),
+        title: translate('problem.title'),
+        description: translate('problem.description'),
+        highlight: translate('problem.highlight'),
       },
       features: {
-        title: '能力',
-        subtitle: '面向技术写作工作流：更快、更一致、更专注。',
-        items: [
-          {
-            title: '实时预览',
-            description: '编辑时同步渲染，减少来回切换，确保格式与含义一致。',
-          },
-          {
-            title: '数学公式（LaTeX）',
-            description: '完整支持行内/块级公式，满足学术与工程文档需求。',
-          },
-          {
-            title: '代码高亮',
-            description: '清晰可读的代码块语法高亮，适配常见编程语言。',
-          },
-          {
-            title: 'Mermaid 图表',
-            description: '在 Markdown 中写流程图/时序图等，并直接渲染预览。',
-          },
-          {
-            title: '表格',
-            description: '支持对齐与清爽展示，适合规范说明与对比表。',
-          },
-          {
-            title: '键盘优先',
-            description: '丰富快捷键，让双手留在键盘，注意力留在内容。',
-          },
-        ],
+        title: translate('features.title'),
+        subtitle: translate('features.subtitle'),
+        items: translate('features.items', { returnObjects: true }) as Array<{
+          title: string;
+          description: string;
+        }>,
       },
       proof: {
-        title: '为技术写作者打造。',
-        subtitle: '离线优先、跨平台、开放迭代。',
-        metrics: [
-          { value: '6', label: '核心能力' },
-          { value: '3', label: '桌面平台' },
-          { value: '2', label: '界面语言' },
-        ],
-        tiles: ['Markdown', 'LaTeX', 'Mermaid', '代码', '表格', '快捷键'],
+        title: translate('proof.title'),
+        subtitle: translate('proof.subtitle'),
+        metrics: translate('proof.metrics', { returnObjects: true }) as Array<{
+          value: string;
+          label: string;
+        }>,
+        tiles: translate('proof.tiles', { returnObjects: true }) as string[],
       },
       collaboration: {
-        eyebrow: '使用方式',
-        title: '按你的工作流选择。',
-        options: [
-          {
-            title: '下载使用',
-            badge: '桌面客户端',
-            description: '安装即可开始写作，专注、快速，内容保留在本地。',
-            bullets: ['离线优先', '渲染一致', '专注写作'],
-          },
-          {
-            title: '提交反馈',
-            badge: '反馈',
-            description: '提交需求与问题，我们会持续迭代，把体验打磨得更好。',
-            bullets: ['需求建议', '问题反馈', '使用体验'],
-          },
-        ],
+        eyebrow: translate('collaboration.eyebrow'),
+        title: translate('collaboration.title'),
+        options: translate('collaboration.options', { returnObjects: true }) as Array<{
+          title: string;
+          badge: string;
+          description: string;
+          bullets: string[];
+        }>,
       },
       download: {
-        title: '下载客户端',
-        subtitle: '支持 macOS、Windows 和 Linux',
-        macOS: 'macOS',
-        windows: 'Windows',
-        linux: 'Linux',
-        appleSilicon: 'Apple Silicon',
-        intel: 'Intel',
-        x64: 'x64',
-        arm64: 'ARM64',
-        appImage: '.AppImage',
-        deb: '.deb',
-        comingSoon: '当前版本正在积极开发中，更多安装包与发布节奏即将推出',
+        title: translate('download.title'),
+        subtitle: translate('download.subtitle'),
+        macOS: translate('download.macOS'),
+        windows: translate('download.windows'),
+        linux: translate('download.linux'),
+        appleSilicon: translate('download.appleSilicon'),
+        intel: translate('download.intel'),
+        x64: translate('download.x64'),
+        arm64: translate('download.arm64'),
+        appImage: translate('download.appImage'),
+        deb: translate('download.deb'),
+        comingSoon: translate('download.comingSoon'),
       },
       philosophy: {
-        title: '写作就是',
-        accent: '结构化思考。',
-        description:
-          '好的编辑器应该减少摩擦。不是写更多，而是让内容随着增长依然清晰、可读、可维护。',
+        title: translate('philosophy.title'),
+        accent: translate('philosophy.accent'),
+        description: translate('philosophy.description'),
       },
       faq: {
-        title: '常见问题',
-        items: [
-          {
-            q: 'Ornata 是在线服务吗？',
-            a: '不是。Ornata 是桌面应用，尽可能让你的写作保持本地与流畅。',
-          },
-          {
-            q: '适合技术文档吗？',
-            a: '适合：公式、代码高亮、图表、表格等都是核心能力。',
-          },
-          {
-            q: '可以配合 Git 使用吗？',
-            a: '可以。文档以 Markdown 保存，天然适合版本管理与协作。',
-          },
-        ],
+        title: translate('faq.title'),
+        items: translate('faq.items', { returnObjects: true }) as Array<{ q: string; a: string }>,
       },
       footer: {
-        docs: '文档',
-        feedback: '问题反馈',
-        headline: '准备好开始结构化写作了吗？',
-        cta: '下载 Ornata',
+        docs: translate('footer.docs'),
+        feedback: translate('footer.feedback'),
+        headline: translate('footer.headline'),
+        cta: translate('footer.cta'),
       },
-    }),
-    []
-  );
+  };
 
   const sectionIds = useMemo<SectionId[]>(
     () => ['home', 'problem', 'features', 'download', 'faq', 'book'],
@@ -310,7 +302,7 @@ function MainContent() {
             onClick={() => scrollToSection('home')}
             className="text-lg tracking-tighter font-semibold uppercase flex items-center gap-2"
           >
-            <div className="w-4 h-4 bg-orange-600" />
+            <img src="/logo.png" alt="Ornata" className="w-5 h-5" />
             Ornata
           </button>
 
@@ -347,6 +339,12 @@ function MainContent() {
             </button>
 
             <div className="flex items-center gap-3 border-l border-[color:var(--border-0)] pl-6">
+              <LanguageSwitch
+                currentLanguage={currentLanguage}
+                onToggle={() => {
+                  void i18n.changeLanguage(currentLanguage === 'zh' ? 'en' : 'zh');
+                }}
+              />
               <ThemeSwitch themeMode={themeMode} onToggle={toggleThemeMode} />
               <a
                 href="#book"
@@ -359,6 +357,12 @@ function MainContent() {
           </div>
 
           <div className="md:hidden flex items-center gap-2">
+            <LanguageSwitch
+              currentLanguage={currentLanguage}
+              onToggle={() => {
+                void i18n.changeLanguage(currentLanguage === 'zh' ? 'en' : 'zh');
+              }}
+            />
             <ThemeSwitch themeMode={themeMode} onToggle={toggleThemeMode} />
             <a
               href="#book"

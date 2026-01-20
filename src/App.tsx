@@ -1,33 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { flushSync } from 'react-dom';
-import {
-  ArrowRight,
-  Briefcase,
-  Calendar,
-  ChevronDown,
-  Compass,
-  Globe,
-  Moon,
-  Sun,
-} from 'lucide-react';
+import { Briefcase, Calendar, ChevronDown, Compass, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
-type ThemeMode = 'light' | 'dark';
-
-function getInitialThemeMode(): ThemeMode {
-  if (typeof window === 'undefined') return 'light';
-
-  const saved = localStorage.getItem('themeMode');
-  if (saved === 'light' || saved === 'dark') {
-    document.documentElement.dataset.theme = saved;
-    return saved;
-  }
-
-  const preferred = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light';
-  document.documentElement.dataset.theme = preferred;
-  return preferred;
-}
 
 function useActiveSection(sectionIds: SectionId[]) {
   const [activeSection, setActiveSection] = useState<SectionId>('home');
@@ -73,34 +48,6 @@ function splitLines(text: string) {
   ));
 }
 
-function ThemeSwitch({
-  themeMode,
-  onToggle,
-}: {
-  themeMode: ThemeMode;
-  onToggle: () => void;
-}) {
-  const { t: translate } = useTranslation();
-  const isDark = themeMode === 'dark';
-
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={isDark}
-      aria-label={isDark ? translate('theme.toLight') : translate('theme.toDark')}
-      onClick={onToggle}
-      className="group inline-flex items-center justify-center p-2 bg-transparent border-0 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--menu-icon-active)]"
-    >
-      {isDark ? (
-        <Moon className="h-4 w-4 text-[var(--menu-icon-active)] transition-colors" />
-      ) : (
-        <Sun className="h-4 w-4 text-[var(--menu-icon)] group-hover:text-[var(--menu-icon-active)] transition-colors" />
-      )}
-    </button>
-  );
-}
-
 function LanguageSwitch({
   currentLanguage,
   onToggle,
@@ -125,13 +72,11 @@ function LanguageSwitch({
 }
 
 function MainContent() {
-  const [themeMode, setThemeMode] = useState<ThemeMode>(() => getInitialThemeMode());
   const { t: translate, i18n } = useTranslation();
 
   useEffect(() => {
-    document.documentElement.dataset.theme = themeMode;
-    localStorage.setItem('themeMode', themeMode);
-  }, [themeMode]);
+    document.documentElement.dataset.theme = 'dark';
+  }, []);
 
   const currentLanguage = i18n.language.startsWith('zh') ? 'zh' : 'en';
 
@@ -139,65 +84,6 @@ function MainContent() {
     document.documentElement.lang = currentLanguage === 'zh' ? 'zh-CN' : 'en';
     localStorage.setItem('language', currentLanguage);
   }, [currentLanguage]);
-
-  const toggleThemeMode = async () => {
-    const wasDark = themeMode === 'dark';
-    const nextMode: ThemeMode = wasDark ? 'light' : 'dark';
-    const prefersReducedMotion =
-      window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
-    type StartViewTransition = (updateCallback: () => void) => { ready: Promise<void> };
-    const startViewTransition = (
-      document as unknown as { startViewTransition?: StartViewTransition }
-    ).startViewTransition?.bind(document) as StartViewTransition | undefined;
-
-    const applyThemeMode = (mode: ThemeMode) => {
-      document.documentElement.dataset.theme = mode;
-      localStorage.setItem('themeMode', mode);
-      setThemeMode(mode);
-    };
-
-    if (!startViewTransition || prefersReducedMotion) {
-      applyThemeMode(nextMode);
-      if (!prefersReducedMotion) {
-        document.body
-          .animate([{ opacity: 0.85 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' })
-          .finished.catch(() => {});
-      }
-      return;
-    }
-
-    let transition: { ready: Promise<void> } | undefined;
-    try {
-      transition = startViewTransition(() => {
-        flushSync(() => {
-          applyThemeMode(nextMode);
-        });
-      });
-    } catch {
-      applyThemeMode(nextMode);
-      return;
-    }
-
-    try {
-      await transition.ready;
-      const endRadius = Math.hypot(window.innerWidth, window.innerHeight);
-      document.documentElement.animate(
-        {
-          clipPath: [
-            `circle(0px at ${window.innerWidth}px 0px)`,
-            `circle(${endRadius}px at ${window.innerWidth}px 0px)`,
-          ],
-        },
-        {
-          duration: 1000,
-          easing: 'ease-in-out',
-          pseudoElement: '::view-transition-new(root)',
-        } as unknown as KeyframeAnimationOptions
-      );
-    } catch {
-      void 0;
-    }
-  };
 
   const t = {
       nav: {
@@ -210,6 +96,7 @@ function MainContent() {
         titleLine1: translate('hero.titleLine1'),
         titleLine2: translate('hero.titleLine2'),
         titleAccent: translate('hero.titleAccent'),
+        tagline: translate('hero.tagline'),
         description: translate('hero.description'),
         primaryCta: translate('hero.primaryCta'),
       },
@@ -296,11 +183,11 @@ function MainContent() {
 
   return (
     <div className="min-h-screen bg-[var(--surface-0)] text-[var(--text-0)] antialiased selection:bg-orange-500 selection:text-white">
-      <nav className="fixed top-0 w-full z-50 bg-[var(--surface-0)] backdrop-blur-sm border-b border-[color:var(--border-0)]">
+      <nav className="fixed top-0 w-full z-50 bg-[var(--surface-0)]/90 backdrop-blur-sm shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => scrollToSection('home')}
-            className="text-lg tracking-tighter font-semibold uppercase flex items-center gap-2"
+            className="text-lg tracking-tighter font-semibold flex items-center gap-2"
           >
             <img src="/logo.png" alt="Ornata" className="w-5 h-5" />
             Ornata
@@ -338,21 +225,13 @@ function MainContent() {
               {t.nav.faq}
             </button>
 
-            <div className="flex items-center gap-3 border-l border-[color:var(--border-0)] pl-6">
+            <div className="flex items-center gap-3">
               <LanguageSwitch
                 currentLanguage={currentLanguage}
                 onToggle={() => {
                   void i18n.changeLanguage(currentLanguage === 'zh' ? 'en' : 'zh');
                 }}
               />
-              <ThemeSwitch themeMode={themeMode} onToggle={toggleThemeMode} />
-              <a
-                href="#book"
-                className="hidden lg:flex items-center gap-2 text-sm font-medium border border-[color:var(--border-0)] px-5 py-2 text-[var(--menu-icon-active)] hover:bg-neutral-900 hover:!text-white transition-colors duration-300"
-              >
-                {t.nav.cta}
-                <ArrowRight className="w-4 h-4" />
-              </a>
             </div>
           </div>
 
@@ -363,30 +242,14 @@ function MainContent() {
                 void i18n.changeLanguage(currentLanguage === 'zh' ? 'en' : 'zh');
               }}
             />
-            <ThemeSwitch themeMode={themeMode} onToggle={toggleThemeMode} />
-            <a
-              href="#book"
-              className="h-9 px-3 flex items-center gap-2 border border-[color:var(--border-0)] text-sm font-medium text-[var(--menu-icon-active)] hover:bg-neutral-900 hover:!text-white transition-colors"
-            >
-              {t.nav.cta}
-              <ArrowRight className="w-4 h-4" />
-            </a>
           </div>
         </div>
       </nav>
 
       <header
         id="home"
-        className="relative pt-32 pb-20 md:pt-48 md:pb-32 border-b border-[color:var(--border-0)] overflow-hidden"
+        className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden"
       >
-        <div className="absolute inset-0 pointer-events-none opacity-10">
-          <div className="w-full h-full grid grid-cols-6 md:grid-cols-12 gap-0">
-            {Array.from({ length: 12 }).map((_, idx) => (
-              <div key={idx} className="border-r border-[color:var(--text-0)] h-full col-span-1" />
-            ))}
-          </div>
-        </div>
-
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
             <div className="md:col-span-8">
@@ -395,14 +258,17 @@ function MainContent() {
                 {t.hero.titleLine2}{' '}
                 <span className="text-orange-600">{t.hero.titleAccent}</span>
               </h1>
+              <p className="text-sm md:text-base text-[var(--text-1)] max-w-md">
+                {t.hero.tagline}
+              </p>
             </div>
 
             <div className="md:col-span-4 flex flex-col justify-end">
               <div className="w-full aspect-square relative mb-8 hidden md:block">
-                <div className="absolute top-0 left-0 w-8 h-8 bg-neutral-200" />
-                <div className="absolute top-4 left-12 w-8 h-8 bg-neutral-300" />
-                <div className="absolute top-12 left-4 w-8 h-8 bg-neutral-800" />
-                <div className="absolute bottom-0 right-0 w-32 h-32 border border-[color:var(--border-0)] flex flex-wrap content-end">
+                <div className="absolute top-0 left-0 w-8 h-8 bg-neutral-700" />
+                <div className="absolute top-4 left-12 w-8 h-8 bg-neutral-600" />
+                <div className="absolute top-12 left-4 w-8 h-8 bg-neutral-900" />
+                <div className="absolute bottom-0 right-0 w-32 h-32 bg-[var(--surface-1)]/80 rounded-2xl flex flex-wrap content-end">
                   {Array.from({ length: 9 }).map((_, idx) => (
                     <div
                       key={idx}
@@ -431,19 +297,19 @@ function MainContent() {
         </div>
       </header>
 
-      <section id="problem" className="border-b border-[color:var(--border-0)] py-24">
+      <section id="problem" className="py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
-            <div className="relative h-64 md:h-auto bg-[var(--surface-1)] border border-[color:var(--border-0)] flex items-center justify-center overflow-hidden group">
+            <div className="relative h-64 md:h-auto bg-[var(--surface-1)]/70 rounded-2xl flex items-center justify-center overflow-hidden group shadow-sm">
               <div className="grid grid-cols-5 gap-2 opacity-60 transform group-hover:scale-105 transition-transform duration-700">
-                <div className="w-12 h-12 border border-[color:var(--border-0)]" />
-                <div className="w-12 h-12 bg-neutral-200 translate-y-4" />
-                <div className="w-12 h-12 border border-[color:var(--border-0)] -translate-x-2" />
+                <div className="w-12 h-12 bg-neutral-800/70" />
+                <div className="w-12 h-12 bg-neutral-600 translate-y-4" />
+                <div className="w-12 h-12 bg-neutral-800/70 -translate-x-2" />
                 <div className="w-12 h-12 bg-neutral-900 rotate-12" />
-                <div className="w-12 h-12 border border-[color:var(--border-0)]" />
-                <div className="w-12 h-12 border border-[color:var(--border-0)] translate-x-4" />
-                <div className="w-12 h-12 bg-neutral-400" />
-                <div className="w-12 h-12 border border-[color:var(--border-0)]" />
+                <div className="w-12 h-12 bg-neutral-800/70" />
+                <div className="w-12 h-12 bg-neutral-700 translate-x-4" />
+                <div className="w-12 h-12 bg-neutral-500" />
+                <div className="w-12 h-12 bg-neutral-700" />
               </div>
               <div className="absolute bottom-4 left-4 text-xs font-mono uppercase text-neutral-400">
                 Fig 1. Entropy
@@ -460,7 +326,7 @@ function MainContent() {
               <p className="text-[var(--text-1)] text-lg leading-relaxed mb-6">
                 {t.problem.description}
               </p>
-              <p className="text-[var(--text-0)] text-lg font-medium leading-relaxed border-l-2 border-orange-600 pl-6">
+              <p className="text-[var(--text-0)] text-lg font-medium leading-relaxed bg-[var(--surface-1)]/70 rounded-xl px-5 py-4">
                 {t.problem.highlight}
               </p>
             </div>
@@ -468,9 +334,9 @@ function MainContent() {
         </div>
       </section>
 
-      <section id="features" className="border-b border-[color:var(--border-0)]">
-        <div className="max-w-7xl mx-auto">
-          <div className="p-6 md:p-12 border-b border-[color:var(--border-0)]">
+      <section id="features" className="py-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-12">
             <h2 className="text-4xl tracking-tighter font-semibold">{t.features.title}</h2>
             <p className="mt-4 text-[var(--text-1)] max-w-3xl">{t.features.subtitle}</p>
           </div>
@@ -478,14 +344,12 @@ function MainContent() {
           {featureRows.map((row, rowIndex) => (
             <div
               key={rowIndex}
-              className={`grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[color:var(--border-0)] ${
-                rowIndex === 1 ? 'border-t border-[color:var(--border-0)]' : ''
-              }`}
+              className={`grid grid-cols-1 md:grid-cols-3 gap-6 ${rowIndex === 1 ? 'mt-6' : ''}`}
             >
               {row.map((item, idx) => (
                 <div
                   key={`${rowIndex}-${idx}`}
-                  className="p-8 md:p-12 hover:bg-[var(--surface-1)] transition-colors duration-300"
+                  className="p-8 md:p-10 rounded-2xl bg-[var(--surface-1)]/70 hover:bg-[var(--surface-1)] transition-colors duration-300"
                 >
                   <h3 className="text-xl font-semibold text-[var(--text-0)] mb-4 tracking-tight">
                     {item.title}
@@ -498,7 +362,7 @@ function MainContent() {
         </div>
       </section>
 
-      <section className="py-24 border-b border-[color:var(--border-0)] bg-neutral-900 text-white">
+      <section className="py-24 bg-neutral-900 text-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
             <div className="md:col-span-4">
@@ -519,12 +383,12 @@ function MainContent() {
               </div>
             </div>
 
-            <div className="md:col-span-8 border-t md:border-t-0 md:border-l border-neutral-800 md:pl-12 pt-12 md:pt-0">
+            <div className="md:col-span-8 md:pl-12 pt-6 md:pt-0">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
                 {t.proof.tiles.map((tile, idx) => (
                   <div
                     key={idx}
-                    className="h-20 flex items-center border border-neutral-800 p-4 hover:border-neutral-600 transition-colors"
+                    className="h-20 flex items-center rounded-xl bg-neutral-800/60 p-4 hover:bg-neutral-800 transition-colors"
                   >
                     <span className="font-bold text-lg tracking-tight">{tile}</span>
                   </div>
@@ -535,7 +399,7 @@ function MainContent() {
         </div>
       </section>
 
-      <section className="py-24 border-b border-[color:var(--border-0)]">
+      <section className="py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-16">
             <span className="text-orange-600 font-mono text-xs uppercase tracking-widest">
@@ -544,19 +408,15 @@ function MainContent() {
             <h2 className="text-4xl font-semibold tracking-tighter mt-4">{t.collaboration.title}</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-0 border border-[color:var(--border-0)]">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {t.collaboration.options.map((opt, idx) => (
               <div
                 key={idx}
-                className={`p-10 md:p-16 hover:bg-[var(--surface-1)] transition-all duration-300 ${
-                  idx === 0 ? 'border-b md:border-b-0 md:border-r border-[color:var(--border-0)]' : ''
-                }`}
+                className="p-10 md:p-12 rounded-2xl bg-[var(--surface-1)]/70 hover:bg-[var(--surface-1)] transition-all duration-300"
               >
                 <div
-                  className={`w-12 h-12 flex items-center justify-center mb-8 border ${
-                    idx === 0
-                      ? 'bg-neutral-900 text-white border-neutral-900'
-                      : 'bg-[var(--surface-0)] text-[var(--text-0)] border-[color:var(--border-0)]'
+                  className={`w-12 h-12 flex items-center justify-center mb-8 rounded-xl ${
+                    idx === 0 ? 'bg-neutral-900 text-white' : 'bg-[var(--surface-0)] text-[var(--text-0)]'
                   }`}
                 >
                   {idx === 0 ? <Briefcase className="w-6 h-6" /> : <Compass className="w-6 h-6" />}
@@ -580,7 +440,7 @@ function MainContent() {
         </div>
       </section>
 
-      <section id="download" className="py-24 border-b border-[color:var(--border-0)]">
+      <section id="download" className="py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-16">
             <span className="text-orange-600 font-mono text-xs uppercase tracking-widest">
@@ -589,7 +449,7 @@ function MainContent() {
             <h2 className="text-4xl font-semibold tracking-tighter mt-4">{t.download.title}</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-0 border border-[color:var(--border-0)]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
                 title: t.download.macOS,
@@ -606,12 +466,10 @@ function MainContent() {
                 title: t.download.linux,
                 items: [`${t.download.x64} ${t.download.appImage}`, `${t.download.x64} ${t.download.deb}`],
               },
-            ].map((col, colIdx) => (
+            ].map((col) => (
               <div
                 key={col.title}
-                className={`p-10 md:p-12 ${
-                  colIdx < 2 ? 'border-b md:border-b-0 md:border-r border-[color:var(--border-0)]' : ''
-                }`}
+                className="p-10 md:p-12 rounded-2xl bg-[var(--surface-1)]/70"
               >
                 <h3 className="text-xl font-semibold tracking-tight mb-6">{col.title}</h3>
                 <div className="space-y-3 text-sm">
@@ -619,7 +477,7 @@ function MainContent() {
                     <a
                       key={idx}
                       href="#"
-                      className="block p-4 border border-[color:var(--border-0)] hover:bg-[var(--surface-1)] transition-colors"
+                      className="block rounded-lg bg-[var(--surface-0)]/70 px-4 py-3 hover:bg-[var(--surface-0)] transition-colors"
                     >
                       {label}
                     </a>
@@ -633,20 +491,20 @@ function MainContent() {
         </div>
       </section>
 
-      <section className="py-32 border-b border-[color:var(--border-0)] bg-[var(--surface-1)]">
+      <section className="py-32 bg-[var(--surface-1)]">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-5xl md:text-7xl font-semibold tracking-tighter mb-8 text-[var(--text-0)]">
             {t.philosophy.title}{' '}
             <span className="italic font-serif">{t.philosophy.accent}</span>
           </h2>
-          <div className="w-px h-16 bg-orange-600 mx-auto mb-8" />
+          <div className="w-12 h-1 bg-orange-600 mx-auto mb-8 rounded-full" />
           <p className="text-xl md:text-2xl text-[var(--text-1)] leading-relaxed font-light">
             {t.philosophy.description}
           </p>
         </div>
       </section>
 
-      <section id="faq" className="py-24 border-b border-[color:var(--border-0)]">
+      <section id="faq" className="py-24">
         <div className="max-w-3xl mx-auto px-6">
           <h2 className="text-3xl font-semibold tracking-tighter mb-12">{t.faq.title}</h2>
 
@@ -654,9 +512,9 @@ function MainContent() {
             {t.faq.items.map((item, idx) => (
               <details
                 key={idx}
-                className="group border border-[color:var(--border-0)] bg-[var(--surface-0)] cursor-pointer"
+                className="group rounded-2xl bg-[var(--surface-1)]/70 cursor-pointer"
               >
-                <summary className="flex justify-between items-center p-6 font-medium text-lg hover:bg-[var(--surface-1)] transition-colors">
+                <summary className="flex justify-between items-center p-6 font-medium text-lg hover:bg-[var(--surface-1)] transition-colors rounded-2xl">
                   <span>{item.q}</span>
                   <span className="transform group-open:rotate-180 transition-transform duration-200">
                     <ChevronDown className="w-5 h-5 text-neutral-400" />
@@ -683,7 +541,7 @@ function MainContent() {
             <Calendar className="w-5 h-5" />
           </a>
 
-          <div className="mt-24 pt-8 border-t border-[color:var(--border-0)] w-full flex flex-col md:flex-row justify-between items-center text-sm text-[var(--text-1)]">
+          <div className="mt-16 pt-6 w-full flex flex-col md:flex-row justify-between items-center text-sm text-[var(--text-1)]">
             <p>© 2026 Ornata. All rights reserved.</p>
             <div className="flex gap-6 mt-4 md:mt-0">
               <a href="#" className="hover:text-orange-600 transition-colors">

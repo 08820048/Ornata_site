@@ -27,11 +27,12 @@ i18n.use(initReactI18next).init({
           cta: '下载客户端',
         },
         hero: {
-          titleLine1: '让写作从',
-          titleLine2: '混沌走向',
-          titleAccent: '秩序。',
+          titleLine1: 'Write without',
+          titleLine2: 'friction',
+          titleAccent: '.',
+          tagline: 'A markdown editor that stays out of your way.',
           description:
-            '一个简洁而强大的桌面 Markdown 编辑器，专为技术写作打造。公式、代码、图表、表格——组织成可读、可复用、可发布的文档。',
+            'Ornata is a lightweight Markdown editor designed for speed and clarity. From instant startup to smooth editing, it removes friction between thought and text.',
           primaryCta: '下载客户端',
         },
         problem: {
@@ -161,11 +162,12 @@ i18n.use(initReactI18next).init({
           cta: 'Download App',
         },
         hero: {
-          titleLine1: 'Turn writing from',
-          titleLine2: 'chaos to',
-          titleAccent: 'order.',
+          titleLine1: 'Write without',
+          titleLine2: 'friction',
+          titleAccent: '.',
+          tagline: 'A markdown editor that stays out of your way.',
           description:
-            'A clean yet powerful desktop Markdown editor built for technical writing. Formulas, code, diagrams, tables—organized into readable, reusable, publishable documents.',
+            'Ornata is a lightweight Markdown editor designed for speed and clarity. From instant startup to smooth editing, it removes friction between thought and text.',
           primaryCta: 'Download App',
         },
         problem: {

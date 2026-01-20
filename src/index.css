@@ -34,10 +34,10 @@
 
 [data-theme='dark'] {
   color-scheme: dark;
-  --surface-0: #1e1e1e;
+  --surface-0: #090909;
   --surface-1: #2a2a2a;
-  --text-0: #f4f4f5;
-  --text-1: #a1a1aa;
+  --text-0: #f4f3f4;
+  --text-1: #f4f3f4;
   --border-0: #2f2f2f;
   --menu-icon: #7e7f82;
   --menu-icon-active: #d5d5d5;

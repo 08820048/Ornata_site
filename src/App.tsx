@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Briefcase, Calendar, ChevronDown, Compass, Globe } from 'lucide-react';
+import { Calendar, ChevronDown, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
@@ -248,11 +248,11 @@ function MainContent() {
 
       <header
         id="home"
-        className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden"
+        className="relative min-h-screen overflow-hidden flex items-center"
       >
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 items-end">
-            <div className="md:col-span-8">
+          <div className="grid grid-cols-1 gap-10 items-center">
+            <div className="max-w-4xl">
               <h1 className="text-6xl md:text-8xl lg:text-9xl tracking-tighter font-semibold leading-[0.95] text-[var(--text-0)] mb-8">
                 {t.hero.titleLine1} <br />
                 {t.hero.titleLine2}{' '}
@@ -261,30 +261,7 @@ function MainContent() {
               <p className="text-sm md:text-base text-[var(--text-1)] max-w-md">
                 {t.hero.tagline}
               </p>
-            </div>
-
-            <div className="md:col-span-4 flex flex-col justify-end">
-              <div className="w-full aspect-square relative mb-8 hidden md:block">
-                <div className="absolute top-0 left-0 w-8 h-8 bg-neutral-700" />
-                <div className="absolute top-4 left-12 w-8 h-8 bg-neutral-600" />
-                <div className="absolute top-12 left-4 w-8 h-8 bg-neutral-900" />
-                <div className="absolute bottom-0 right-0 w-32 h-32 bg-[var(--surface-1)]/80 rounded-2xl flex flex-wrap content-end">
-                  {Array.from({ length: 9 }).map((_, idx) => (
-                    <div
-                      key={idx}
-                      className={`w-8 h-8 ${
-                        idx === 0 ? 'bg-orange-600' : idx % 2 === 0 ? 'bg-neutral-900' : 'bg-neutral-700'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <p className="text-lg md:text-xl text-[var(--text-1)] leading-relaxed max-w-md">
-                {t.hero.description}
-              </p>
-
-              <div className="mt-8 flex gap-4 flex-wrap">
+              <div className="mt-10 flex gap-4 flex-wrap">
                 <a
                   href="#download"
                   className="inline-flex items-center justify-center hover:bg-orange-600 transition-colors duration-300 text-sm font-medium !text-white hover:!text-white tracking-wide bg-neutral-900 px-8 py-4"
@@ -299,23 +276,7 @@ function MainContent() {
 
       <section id="problem" className="py-24">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
-            <div className="relative h-64 md:h-auto bg-[var(--surface-1)]/70 rounded-2xl flex items-center justify-center overflow-hidden group shadow-sm">
-              <div className="grid grid-cols-5 gap-2 opacity-60 transform group-hover:scale-105 transition-transform duration-700">
-                <div className="w-12 h-12 bg-neutral-800/70" />
-                <div className="w-12 h-12 bg-neutral-600 translate-y-4" />
-                <div className="w-12 h-12 bg-neutral-800/70 -translate-x-2" />
-                <div className="w-12 h-12 bg-neutral-900 rotate-12" />
-                <div className="w-12 h-12 bg-neutral-800/70" />
-                <div className="w-12 h-12 bg-neutral-700 translate-x-4" />
-                <div className="w-12 h-12 bg-neutral-500" />
-                <div className="w-12 h-12 bg-neutral-700" />
-              </div>
-              <div className="absolute bottom-4 left-4 text-xs font-mono uppercase text-neutral-400">
-                Fig 1. Entropy
-              </div>
-            </div>
-
+          <div className="grid grid-cols-1 gap-16 md:gap-24">
             <div className="flex flex-col justify-center">
               <span className="text-orange-600 font-mono text-xs uppercase tracking-widest mb-4">
                 {t.problem.eyebrow}
@@ -359,84 +320,6 @@ function MainContent() {
               ))}
             </div>
           ))}
-        </div>
-      </section>
-
-      <section className="py-24 bg-neutral-900 text-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-            <div className="md:col-span-4">
-              <h2 className="text-3xl md:text-4xl tracking-tighter font-semibold mb-8">
-                {t.proof.title} <span className="text-neutral-400">{t.proof.subtitle}</span>
-              </h2>
-              <div className="space-y-8">
-                {t.proof.metrics.map((m, idx) => (
-                  <div key={idx}>
-                    <div className="text-5xl md:text-6xl font-semibold tracking-tighter text-orange-500">
-                      {m.value}
-                    </div>
-                    <div className="text-sm uppercase tracking-widest text-neutral-400 mt-2">
-                      {m.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="md:col-span-8 md:pl-12 pt-6 md:pt-0">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
-                {t.proof.tiles.map((tile, idx) => (
-                  <div
-                    key={idx}
-                    className="h-20 flex items-center rounded-xl bg-neutral-800/60 p-4 hover:bg-neutral-800 transition-colors"
-                  >
-                    <span className="font-bold text-lg tracking-tight">{tile}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="mb-16">
-            <span className="text-orange-600 font-mono text-xs uppercase tracking-widest">
-              {t.collaboration.eyebrow}
-            </span>
-            <h2 className="text-4xl font-semibold tracking-tighter mt-4">{t.collaboration.title}</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {t.collaboration.options.map((opt, idx) => (
-              <div
-                key={idx}
-                className="p-10 md:p-12 rounded-2xl bg-[var(--surface-1)]/70 hover:bg-[var(--surface-1)] transition-all duration-300"
-              >
-                <div
-                  className={`w-12 h-12 flex items-center justify-center mb-8 rounded-xl ${
-                    idx === 0 ? 'bg-neutral-900 text-white' : 'bg-[var(--surface-0)] text-[var(--text-0)]'
-                  }`}
-                >
-                  {idx === 0 ? <Briefcase className="w-6 h-6" /> : <Compass className="w-6 h-6" />}
-                </div>
-                <h3 className="text-2xl font-semibold mb-4 tracking-tight">{opt.title}</h3>
-                <p className="text-sm font-mono text-orange-600 uppercase tracking-wider mb-6">
-                  {opt.badge}
-                </p>
-                <p className="text-[var(--text-1)] leading-relaxed mb-8">{opt.description}</p>
-                <ul className="space-y-3 mb-8 text-[var(--text-1)] text-sm">
-                  {opt.bullets.map((b, bIdx) => (
-                    <li key={bIdx} className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 bg-[var(--text-0)]" />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 

@@ -30,7 +30,8 @@ i18n.use(initReactI18next).init({
           titleLine1: 'Write without',
           titleLine2: 'friction',
           titleAccent: '.',
-          tagline: 'A markdown editor that stays out of your way.',
+          tagline:
+            'Ornata is a lightweight Markdown editor designed for speed and clarity. From instant startup to smooth editing, it removes friction between thought and text.',
           description:
             'Ornata is a lightweight Markdown editor designed for speed and clarity. From instant startup to smooth editing, it removes friction between thought and text.',
           primaryCta: '下载客户端',
@@ -165,7 +166,8 @@ i18n.use(initReactI18next).init({
           titleLine1: 'Write without',
           titleLine2: 'friction',
           titleAccent: '.',
-          tagline: 'A markdown editor that stays out of your way.',
+          tagline:
+            'Ornata is a lightweight Markdown editor designed for speed and clarity. From instant startup to smooth editing, it removes friction between thought and text.',
           description:
             'Ornata is a lightweight Markdown editor designed for speed and clarity. From instant startup to smooth editing, it removes friction between thought and text.',
           primaryCta: 'Download App',

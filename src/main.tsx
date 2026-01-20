@@ -24,6 +24,7 @@ i18n.use(initReactI18next).init({
           features: '能力',
           download: '下载',
           faq: '常见问题',
+          discord: 'Discord',
           cta: '下载客户端',
         },
         hero: {
@@ -35,6 +36,7 @@ i18n.use(initReactI18next).init({
           description:
             'Ornata is a lightweight Markdown editor designed for speed and clarity. From instant startup to smooth editing, it removes friction between thought and text.',
           primaryCta: '下载客户端',
+          discordCta: 'Discord',
         },
         problem: {
           eyebrow: '写作的断层',
@@ -160,6 +162,7 @@ i18n.use(initReactI18next).init({
           features: 'Features',
           download: 'Download',
           faq: 'FAQ',
+          discord: 'Discord',
           cta: 'Download App',
         },
         hero: {
@@ -171,6 +174,7 @@ i18n.use(initReactI18next).init({
           description:
             'Ornata is a lightweight Markdown editor designed for speed and clarity. From instant startup to smooth editing, it removes friction between thought and text.',
           primaryCta: 'Download App',
+          discordCta: 'Discord',
         },
         problem: {
           eyebrow: 'The Writing Gap',

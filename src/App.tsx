@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Calendar, ChevronDown, Globe } from 'lucide-react';
+import { Calendar, ChevronDown, Download, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
@@ -64,7 +64,7 @@ function LanguageSwitch({
         currentLanguage === 'zh' ? translate('language.toEnglish') : translate('language.toChinese')
       }
       onClick={onToggle}
-      className="group inline-flex items-center justify-center p-2 bg-transparent border-0 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--menu-icon-active)]"
+      className="group inline-flex items-center justify-center p-2 bg-transparent border-0 rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--menu-icon-active)]"
     >
       <Globe className="h-4 w-4 text-[var(--menu-icon)] group-hover:text-[var(--menu-icon-active)] transition-colors" />
     </button>
@@ -90,6 +90,7 @@ function MainContent() {
         features: translate('nav.features'),
         download: translate('nav.download'),
         faq: translate('nav.faq'),
+        discord: translate('nav.discord'),
         cta: translate('nav.cta'),
       },
       hero: {
@@ -99,6 +100,7 @@ function MainContent() {
         tagline: translate('hero.tagline'),
         description: translate('hero.description'),
         primaryCta: translate('hero.primaryCta'),
+        discordCta: translate('hero.discordCta'),
       },
       problem: {
         eyebrow: translate('problem.eyebrow'),
@@ -187,7 +189,7 @@ function MainContent() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => scrollToSection('home')}
-            className="text-lg tracking-tighter font-semibold flex items-center gap-2"
+            className="text-lg tracking-tighter font-semibold flex items-center gap-2 rounded-[10px]"
           >
             <img src="/logo.png" alt="Ornata" className="w-5 h-5" />
             Ornata
@@ -200,7 +202,7 @@ function MainContent() {
                 activeSection === 'features'
                   ? 'text-[var(--menu-icon-active)]'
                   : 'text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)]'
-              }`}
+              } rounded-[10px]`}
             >
               {t.nav.features}
             </button>
@@ -210,7 +212,7 @@ function MainContent() {
                 activeSection === 'download'
                   ? 'text-[var(--menu-icon-active)]'
                   : 'text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)]'
-              }`}
+              } rounded-[10px]`}
             >
               {t.nav.download}
             </button>
@@ -220,10 +222,18 @@ function MainContent() {
                 activeSection === 'faq'
                   ? 'text-[var(--menu-icon-active)]'
                   : 'text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)]'
-              }`}
+              } rounded-[10px]`}
             >
               {t.nav.faq}
             </button>
+            <a
+              href="https://discord.gg/hFkmXtrkWZ"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] transition-colors"
+            >
+              {t.nav.discord}
+            </a>
 
             <div className="flex items-center gap-3">
               <LanguageSwitch
@@ -236,6 +246,14 @@ function MainContent() {
           </div>
 
           <div className="md:hidden flex items-center gap-2">
+            <a
+              href="https://discord.gg/hFkmXtrkWZ"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] transition-colors"
+            >
+              {t.nav.discord}
+            </a>
             <LanguageSwitch
               currentLanguage={currentLanguage}
               onToggle={() => {
@@ -264,9 +282,30 @@ function MainContent() {
               <div className="mt-10 flex gap-4 flex-wrap">
                 <a
                   href="#download"
-                  className="inline-flex items-center justify-center hover:bg-orange-600 transition-colors duration-300 text-sm font-medium !text-white hover:!text-white tracking-wide bg-neutral-900 px-8 py-4"
+                  className="inline-flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors duration-300 text-sm font-medium !text-white hover:!text-white tracking-wide bg-neutral-900 px-8 py-4 rounded-[10px]"
                 >
+                  <Download className="w-4 h-4" />
                   {t.hero.primaryCta}
+                </a>
+                <a
+                  href="https://discord.gg/hFkmXtrkWZ"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center justify-center gap-2 text-[var(--text-0)] hover:text-white hover:bg-orange-600 transition-colors duration-300 text-sm font-medium tracking-wide px-8 py-4 rounded-[10px]"
+                >
+                  <svg
+                    role="img"
+                    aria-hidden="true"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4"
+                  >
+                    <path
+                      fill="#5865F2"
+                      d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"
+                    />
+                  </svg>
+                  {t.hero.discordCta}
                 </a>
               </div>
             </div>
@@ -360,7 +399,7 @@ function MainContent() {
                     <a
                       key={idx}
                       href="#"
-                      className="block rounded-lg bg-[var(--surface-0)]/70 px-4 py-3 hover:bg-[var(--surface-0)] transition-colors"
+                      className="block rounded-[10px] bg-[var(--surface-0)]/70 px-4 py-3 hover:bg-[var(--surface-0)] transition-colors"
                     >
                       {label}
                     </a>
@@ -418,7 +457,7 @@ function MainContent() {
 
           <a
             href="#download"
-            className="inline-flex items-center gap-3 bg-orange-600 text-white px-10 py-5 text-lg font-medium hover:bg-neutral-900 transition-colors duration-300"
+            className="inline-flex items-center gap-3 bg-orange-600 text-white px-10 py-5 text-lg font-medium hover:bg-neutral-900 transition-colors duration-300 rounded-[10px]"
           >
             {t.footer.cta}
             <Calendar className="w-5 h-5" />

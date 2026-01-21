@@ -223,7 +223,8 @@ function MainContent() {
               href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-medium text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] transition-colors"
+              className="text-sm font-medium hover:text-[var(--menu-icon-active)] transition-colors"
+              style={{ color: '#7c7d80' }}
             >
               {t.nav.feedback}
             </a>
@@ -231,7 +232,8 @@ function MainContent() {
               href="https://discord.gg/hFkmXtrkWZ"
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-medium text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] transition-colors"
+              className="text-sm font-medium hover:text-[var(--menu-icon-active)] transition-colors"
+              style={{ color: '#7c7d80' }}
             >
               {t.nav.discord}
             </a>
@@ -243,7 +245,8 @@ function MainContent() {
               href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-medium text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] transition-colors"
+              className="text-sm font-medium hover:text-[var(--menu-icon-active)] transition-colors"
+              style={{ color: '#7c7d80' }}
             >
               {t.nav.feedback}
             </a>
@@ -251,7 +254,8 @@ function MainContent() {
               href="https://discord.gg/hFkmXtrkWZ"
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-medium text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] transition-colors"
+              className="text-sm font-medium hover:text-[var(--menu-icon-active)] transition-colors"
+              style={{ color: '#7c7d80' }}
             >
               {t.nav.discord}
             </a>

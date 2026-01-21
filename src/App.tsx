@@ -25,8 +25,8 @@ function useActiveSection(sectionIds: SectionId[]) {
       },
       {
         root: null,
-        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.6],
-        rootMargin: '-20% 0px -70% 0px',
+        threshold: [0, 0.1, 0.2, 0.3, 0.4],
+        rootMargin: '-15% 0px -45% 0px',
       }
     );
 
@@ -48,18 +48,18 @@ function MainContent() {
       features: 'Features',
       download: 'Download',
       faq: 'FAQ',
+      feedback: 'Feedback',
       discord: 'Discord',
       cta: 'Download App',
     },
     hero: {
       titleLine1: 'Write without',
       titleLine2: 'friction',
-      titleAccent: '.',
       tagline:
         'Ornata is a lightweight Markdown editor for technical writing. Fast, focused, and designed to stay out of your way.',
       description:
         'Ornata is a lightweight Markdown editor designed for speed and clarity. From instant startup to smooth editing, it removes friction between thought and text.',
-      primaryCta: 'Download App',
+      primaryCta: 'Download',
       discordCta: 'Discord',
     },
     features: {
@@ -118,10 +118,13 @@ function MainContent() {
           q: 'Can it work with Git?',
           a: 'Yes. Documents are saved as Markdown, ideal for version control.',
         },
+        {
+          q: 'Do I need an account or internet connection to use Ornata?',
+          a: 'No. Ornata runs entirely on your local machine. No account, no login, and no always-on internet connection are required. Once installed, Ornata works fully offline like a traditional desktop editor.',
+        },
       ],
     },
     footer: {
-      docs: 'Docs',
       feedback: 'Feedback',
       headline: 'Ready to write with structure?',
       cta: 'Download Ornata',
@@ -130,6 +133,42 @@ function MainContent() {
 
   const sectionIds = useMemo<SectionId[]>(() => ['home', 'features', 'download', 'faq', 'book'], []);
   const activeSection = useActiveSection(sectionIds);
+  const downloadColumns: Array<{
+    title: string;
+    disabled?: boolean;
+    items: Array<{ label: string; href?: string }>;
+  }> = [
+    {
+      title: t.download.macOS,
+      items: [
+        {
+          label: `${t.download.appleSilicon} (.dmg)`,
+          href: 'https://api.upgrade.toolsetlink.com/v1/tauri/download?tauriKey=eBdCwsKmTLj1UJLirVAN6Q&target=darwin&arch=aarch64&versionName=0.1.1',
+        },
+        {
+          label: `${t.download.intel} (.dmg)`,
+          href: 'https://api.upgrade.toolsetlink.com/v1/tauri/download?tauriKey=eBdCwsKmTLj1UJLirVAN6Q&target=darwin&arch=x86_64&versionName=0.1.1',
+        },
+      ],
+    },
+    {
+      title: t.download.windows,
+      items: [
+        {
+          label: `${t.download.x64} (.msi)`,
+          href: 'https://api.upgrade.toolsetlink.com/v1/tauri/download?tauriKey=eBdCwsKmTLj1UJLirVAN6Q&target=windows&arch=x86_64&versionName=0.1.1',
+        },
+      ],
+    },
+    {
+      title: t.download.linux,
+      disabled: true,
+      items: [
+        { label: `${t.download.x64} ${t.download.appImage}` },
+        { label: `${t.download.x64} ${t.download.deb}` },
+      ],
+    },
+  ];
 
   const scrollToSection = (sectionId: SectionId) => {
     const element = document.getElementById(sectionId);
@@ -181,6 +220,14 @@ function MainContent() {
               {t.nav.faq}
             </button>
             <a
+              href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] transition-colors"
+            >
+              {t.nav.feedback}
+            </a>
+            <a
               href="https://discord.gg/hFkmXtrkWZ"
               target="_blank"
               rel="noreferrer"
@@ -192,6 +239,14 @@ function MainContent() {
           </div>
 
           <div className="md:hidden flex items-center gap-2">
+            <a
+              href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] transition-colors"
+            >
+              {t.nav.feedback}
+            </a>
             <a
               href="https://discord.gg/hFkmXtrkWZ"
               target="_blank"
@@ -213,8 +268,7 @@ function MainContent() {
             <div className="max-w-4xl">
               <h1 className="text-6xl md:text-8xl lg:text-9xl tracking-tighter font-semibold leading-[0.95] text-[var(--text-0)] mb-8">
                 {t.hero.titleLine1} <br />
-                {t.hero.titleLine2}{' '}
-                <span className="text-orange-600">{t.hero.titleAccent}</span>
+                {t.hero.titleLine2}
               </h1>
               <p className="text-sm md:text-base text-[var(--text-1)] max-w-md">
                 {t.hero.tagline}
@@ -294,24 +348,7 @@ function MainContent() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                title: t.download.macOS,
-                items: [
-                  `${t.download.appleSilicon} (.dmg)`,
-                  `${t.download.intel} (.dmg)`,
-                ],
-              },
-              {
-                title: t.download.windows,
-                items: [`${t.download.x64} (.exe)`, `${t.download.arm64} (.exe)`],
-              },
-              {
-                title: t.download.linux,
-                disabled: true,
-                items: [`${t.download.x64} ${t.download.appImage}`, `${t.download.x64} ${t.download.deb}`],
-              },
-            ].map((col) => (
+            {downloadColumns.map((col) => (
               <div
                 key={col.title}
                 className={`relative p-10 md:p-12 rounded-2xl bg-[var(--surface-1)]/70 ${
@@ -320,18 +357,18 @@ function MainContent() {
               >
                 <h3 className="text-xl font-semibold tracking-tight mb-6">{col.title}</h3>
                 <div className="space-y-3 text-sm">
-                  {col.items.map((label, idx) => (
+                  {col.items.map((item, idx) => (
                     <div
                       key={idx}
                       className={`block rounded-[10px] bg-[var(--surface-0)]/70 px-4 py-3 ${
                         col.disabled ? 'text-[var(--text-1)]/70' : 'hover:bg-[var(--surface-0)] transition-colors'
                       }`}
                     >
-                      {col.disabled ? (
-                        <span>{label}</span>
+                      {col.disabled || !item.href ? (
+                        <span>{item.label}</span>
                       ) : (
-                        <a href="#" className="block">
-                          {label}
+                        <a href={item.href} className="block" target="_blank" rel="noreferrer">
+                          {item.label}
                         </a>
                       )}
                     </div>
@@ -384,16 +421,18 @@ function MainContent() {
             <Calendar className="w-5 h-5" />
           </a>
 
-          <div className="mt-16 pt-6 w-full flex flex-col md:flex-row justify-between items-center text-sm text-[var(--text-1)]">
-            <p>© 2026 Ornata. All rights reserved.</p>
-            <div className="flex gap-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-orange-600 transition-colors">
-                {t.footer.docs}
+          <div className="mt-16 pt-6 w-full flex flex-col items-center text-sm text-[var(--text-1)]">
+            <p>
+              © 2026 Ornata. Made with love by{' '}
+              <a
+                href="https://x.com/xuyixff"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-orange-600 transition-colors"
+              >
+                Ornata
               </a>
-              <a href="#" className="hover:text-orange-600 transition-colors">
-                {t.footer.feedback}
-              </a>
-            </div>
+            </p>
           </div>
         </div>
       </footer>

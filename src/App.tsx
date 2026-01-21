@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Calendar, ChevronDown, Download, Globe } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { Calendar, ChevronDown, Download } from 'lucide-react';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
 
@@ -38,122 +37,92 @@ function useActiveSection(sectionIds: SectionId[]) {
   return activeSection;
 }
 
-function LanguageSwitch({
-  currentLanguage,
-  onToggle,
-}: {
-  currentLanguage: 'zh' | 'en';
-  onToggle: () => void;
-}) {
-  const { t: translate } = useTranslation();
-
-  return (
-    <button
-      type="button"
-      aria-label={
-        currentLanguage === 'zh' ? translate('language.toEnglish') : translate('language.toChinese')
-      }
-      onClick={onToggle}
-      className="group inline-flex items-center justify-center p-2 bg-transparent border-0 rounded-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--menu-icon-active)]"
-    >
-      <Globe className="h-4 w-4 text-[var(--menu-icon)] group-hover:text-[var(--menu-icon-active)] transition-colors" />
-    </button>
-  );
-}
-
 function MainContent() {
-  const { t: translate, i18n } = useTranslation();
-
   useEffect(() => {
     document.documentElement.dataset.theme = 'dark';
+    document.documentElement.lang = 'en';
   }, []);
 
-  const currentLanguage = i18n.language.startsWith('zh') ? 'zh' : 'en';
-
-  useEffect(() => {
-    document.documentElement.lang = currentLanguage === 'zh' ? 'zh-CN' : 'en';
-    localStorage.setItem('language', currentLanguage);
-  }, [currentLanguage]);
-
   const t = {
-      nav: {
-        features: translate('nav.features'),
-        download: translate('nav.download'),
-        faq: translate('nav.faq'),
-        discord: translate('nav.discord'),
-        cta: translate('nav.cta'),
-      },
-      hero: {
-        titleLine1: translate('hero.titleLine1'),
-        titleLine2: translate('hero.titleLine2'),
-        titleAccent: translate('hero.titleAccent'),
-        tagline: translate('hero.tagline'),
-        description: translate('hero.description'),
-        primaryCta: translate('hero.primaryCta'),
-        discordCta: translate('hero.discordCta'),
-      },
-      problem: {
-        eyebrow: translate('problem.eyebrow'),
-        title: translate('problem.title'),
-        description: translate('problem.description'),
-        highlight: translate('problem.highlight'),
-      },
-      features: {
-        title: translate('features.title'),
-        subtitle: translate('features.subtitle'),
-        items: translate('features.items', { returnObjects: true }) as Array<{
-          title: string;
-          description: string;
-        }>,
-      },
-      proof: {
-        title: translate('proof.title'),
-        subtitle: translate('proof.subtitle'),
-        metrics: translate('proof.metrics', { returnObjects: true }) as Array<{
-          value: string;
-          label: string;
-        }>,
-        tiles: translate('proof.tiles', { returnObjects: true }) as string[],
-      },
-      collaboration: {
-        eyebrow: translate('collaboration.eyebrow'),
-        title: translate('collaboration.title'),
-        options: translate('collaboration.options', { returnObjects: true }) as Array<{
-          title: string;
-          badge: string;
-          description: string;
-          bullets: string[];
-        }>,
-      },
-      download: {
-        title: translate('download.title'),
-        subtitle: translate('download.subtitle'),
-        macOS: translate('download.macOS'),
-        windows: translate('download.windows'),
-        linux: translate('download.linux'),
-        appleSilicon: translate('download.appleSilicon'),
-        intel: translate('download.intel'),
-        x64: translate('download.x64'),
-        arm64: translate('download.arm64'),
-        appImage: translate('download.appImage'),
-        deb: translate('download.deb'),
-        comingSoon: translate('download.comingSoon'),
-      },
-      philosophy: {
-        title: translate('philosophy.title'),
-        accent: translate('philosophy.accent'),
-        description: translate('philosophy.description'),
-      },
-      faq: {
-        title: translate('faq.title'),
-        items: translate('faq.items', { returnObjects: true }) as Array<{ q: string; a: string }>,
-      },
-      footer: {
-        docs: translate('footer.docs'),
-        feedback: translate('footer.feedback'),
-        headline: translate('footer.headline'),
-        cta: translate('footer.cta'),
-      },
+    nav: {
+      features: 'Features',
+      download: 'Download',
+      faq: 'FAQ',
+      discord: 'Discord',
+      cta: 'Download App',
+    },
+    hero: {
+      titleLine1: 'Write without',
+      titleLine2: 'friction',
+      titleAccent: '.',
+      tagline:
+        'Ornata is a lightweight Markdown editor for technical writing. Fast, focused, and designed to stay out of your way.',
+      description:
+        'Ornata is a lightweight Markdown editor designed for speed and clarity. From instant startup to smooth editing, it removes friction between thought and text.',
+      primaryCta: 'Download App',
+      discordCta: 'Discord',
+    },
+    features: {
+      items: [
+        {
+          title: 'Full Markdown, exactly as expected',
+          description: 'Write in standard Markdown without extensions or surprises.Headings, lists, tables, formulas, and code blocks render cleanly —the way plain text should.',
+        },
+        {
+          title: 'Instant, even with large files',
+          description: 'Open and edit large Markdown files without delay.Scrolling, typing, and rendering stay smooth,、no matter how long the document grows.',
+        },
+        {
+          title: 'Works naturally with Git',
+          description: 'Write Markdown as plain text files that fit perfectly into Git workflows.Clean diffs, readable history,and no hidden metadata.',
+        },
+        {
+          title: 'Edit and preview, side by side',
+          description: 'Write in plain Markdown while preview updates instantly.Switch between edit, preview, or split view —always knowing exactly what you’re writing.',
+        },
+        {
+          title: 'Designed to stay out of your way',
+          description: 'No panels you don’t need. No visual noise. Just a quiet space to think and write.',
+        },
+      ],
+    },
+    download: {
+      title: 'Download',
+      subtitle: 'Available for macOS, Windows, and Linux',
+      macOS: 'macOS',
+      windows: 'Windows',
+      linux: 'Linux',
+      appleSilicon: 'Apple Silicon',
+      intel: 'Intel',
+      x64: 'x64',
+      arm64: 'ARM64',
+      appImage: '.AppImage',
+      deb: '.deb',
+      comingSoon: 'We are actively developing the current release. More builds coming soon.',
+    },
+    faq: {
+      title: 'FAQ',
+      items: [
+        {
+          q: 'Is Ornata an online service?',
+          a: 'No. Ornata is a desktop app that keeps your writing local and smooth.',
+        },
+        {
+          q: 'Is it suitable for technical docs?',
+          a: 'Yes—formulas, code highlighting, diagrams, and tables are core features.',
+        },
+        {
+          q: 'Can it work with Git?',
+          a: 'Yes. Documents are saved as Markdown, ideal for version control.',
+        },
+      ],
+    },
+    footer: {
+      docs: 'Docs',
+      feedback: 'Feedback',
+      headline: 'Ready to write with structure?',
+      cta: 'Download Ornata',
+    },
   };
 
   const sectionIds = useMemo<SectionId[]>(() => ['home', 'features', 'download', 'faq', 'book'], []);
@@ -217,14 +186,6 @@ function MainContent() {
               {t.nav.discord}
             </a>
 
-            <div className="flex items-center gap-3">
-              <LanguageSwitch
-                currentLanguage={currentLanguage}
-                onToggle={() => {
-                  void i18n.changeLanguage(currentLanguage === 'zh' ? 'en' : 'zh');
-                }}
-              />
-            </div>
           </div>
 
           <div className="md:hidden flex items-center gap-2">
@@ -236,12 +197,6 @@ function MainContent() {
             >
               {t.nav.discord}
             </a>
-            <LanguageSwitch
-              currentLanguage={currentLanguage}
-              onToggle={() => {
-                void i18n.changeLanguage(currentLanguage === 'zh' ? 'en' : 'zh');
-              }}
-            />
           </div>
         </div>
       </nav>
@@ -297,11 +252,6 @@ function MainContent() {
 
       <section id="features" className="py-24">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="mb-12">
-            <h2 className="text-4xl tracking-tighter font-semibold">{t.features.title}</h2>
-            <p className="mt-4 text-[var(--text-1)] max-w-3xl">{t.features.subtitle}</p>
-          </div>
-
           <div className="space-y-12">
             {t.features.items.map((item, idx) => (
               <div
@@ -312,16 +262,14 @@ function MainContent() {
                   <h3 className="text-2xl font-semibold text-[var(--text-0)] tracking-tight">
                     {item.title}
                   </h3>
-                  <p className="text-[var(--text-1)] leading-relaxed">
-                    占位描述：这里放能力说明，后续替换。
-                  </p>
+                  <p className="text-[var(--text-1)] leading-relaxed">{item.description}</p>
                 </div>
                 <div
                   className={`rounded-[10px] bg-[var(--surface-1)]/70 aspect-[4/3] flex items-center justify-center text-sm text-[var(--text-1)] ${
                     idx % 2 === 1 ? 'md:order-1' : ''
                   }`}
                 >
-                  占位图
+                  Image placeholder
                 </div>
               </div>
             ))}
@@ -377,19 +325,6 @@ function MainContent() {
           </div>
 
           <p className="text-sm text-[var(--text-1)] mt-8">{t.download.comingSoon}</p>
-        </div>
-      </section>
-
-      <section className="py-32 bg-[var(--surface-1)]">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-5xl md:text-7xl font-semibold tracking-tighter mb-8 text-[var(--text-0)]">
-            {t.philosophy.title}{' '}
-            <span className="italic font-serif">{t.philosophy.accent}</span>
-          </h2>
-          <div className="w-12 h-1 bg-orange-600 mx-auto mb-8 rounded-full" />
-          <p className="text-xl md:text-2xl text-[var(--text-1)] leading-relaxed font-light">
-            {t.philosophy.description}
-          </p>
         </div>
       </section>
 

@@ -38,16 +38,6 @@ function useActiveSection(sectionIds: SectionId[]) {
   return activeSection;
 }
 
-function splitLines(text: string) {
-  const lines = text.split('\n');
-  return lines.map((line, idx) => (
-    <span key={idx}>
-      {line}
-      {idx < lines.length - 1 ? <br /> : null}
-    </span>
-  ));
-}
-
 function LanguageSwitch({
   currentLanguage,
   onToggle,
@@ -166,10 +156,7 @@ function MainContent() {
       },
   };
 
-  const sectionIds = useMemo<SectionId[]>(
-    () => ['home', 'problem', 'features', 'download', 'faq', 'book'],
-    []
-  );
+  const sectionIds = useMemo<SectionId[]>(() => ['home', 'features', 'download', 'faq', 'book'], []);
   const activeSection = useActiveSection(sectionIds);
 
   const scrollToSection = (sectionId: SectionId) => {
@@ -177,11 +164,6 @@ function MainContent() {
     if (!element) return;
     element.scrollIntoView({ behavior: 'smooth' });
   };
-
-  const featureRows = useMemo(() => {
-    const items = t.features.items;
-    return [items.slice(0, 3), items.slice(3, 6)];
-  }, [t.features.items]);
 
   return (
     <div className="min-h-screen bg-[var(--surface-0)] text-[var(--text-0)] antialiased selection:bg-orange-500 selection:text-white">
@@ -313,27 +295,6 @@ function MainContent() {
         </div>
       </header>
 
-      <section id="problem" className="py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 gap-16 md:gap-24">
-            <div className="flex flex-col justify-center">
-              <span className="text-orange-600 font-mono text-xs uppercase tracking-widest mb-4">
-                {t.problem.eyebrow}
-              </span>
-              <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-[var(--text-0)] mb-8 leading-tight">
-                {splitLines(t.problem.title)}
-              </h2>
-              <p className="text-[var(--text-1)] text-lg leading-relaxed mb-6">
-                {t.problem.description}
-              </p>
-              <p className="text-[var(--text-0)] text-lg font-medium leading-relaxed bg-[var(--surface-1)]/70 rounded-xl px-5 py-4">
-                {t.problem.highlight}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section id="features" className="py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-12">
@@ -341,24 +302,30 @@ function MainContent() {
             <p className="mt-4 text-[var(--text-1)] max-w-3xl">{t.features.subtitle}</p>
           </div>
 
-          {featureRows.map((row, rowIndex) => (
-            <div
-              key={rowIndex}
-              className={`grid grid-cols-1 md:grid-cols-3 gap-6 ${rowIndex === 1 ? 'mt-6' : ''}`}
-            >
-              {row.map((item, idx) => (
-                <div
-                  key={`${rowIndex}-${idx}`}
-                  className="p-8 md:p-10 rounded-2xl bg-[var(--surface-1)]/70 hover:bg-[var(--surface-1)] transition-colors duration-300"
-                >
-                  <h3 className="text-xl font-semibold text-[var(--text-0)] mb-4 tracking-tight">
+          <div className="space-y-12">
+            {t.features.items.map((item, idx) => (
+              <div
+                key={item.title}
+                className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center"
+              >
+                <div className={`space-y-4 ${idx % 2 === 1 ? 'md:order-2' : ''}`}>
+                  <h3 className="text-2xl font-semibold text-[var(--text-0)] tracking-tight">
                     {item.title}
                   </h3>
-                  <p className="text-[var(--text-1)] leading-relaxed">{item.description}</p>
+                  <p className="text-[var(--text-1)] leading-relaxed">
+                    占位描述：这里放能力说明，后续替换。
+                  </p>
                 </div>
-              ))}
-            </div>
-          ))}
+                <div
+                  className={`rounded-[10px] bg-[var(--surface-1)]/70 aspect-[4/3] flex items-center justify-center text-sm text-[var(--text-1)] ${
+                    idx % 2 === 1 ? 'md:order-1' : ''
+                  }`}
+                >
+                  占位图
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

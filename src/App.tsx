@@ -102,7 +102,6 @@ function MainContent() {
       arm64: 'ARM64',
       appImage: '.AppImage',
       deb: '.deb',
-      comingSoon: 'We are actively developing the current release. More builds coming soon.',
     },
     faq: {
       title: 'FAQ',
@@ -290,7 +289,7 @@ function MainContent() {
           <div className="mb-16">
             <h2 className="text-4xl font-semibold tracking-tighter mt-4">{t.download.title}</h2>
             <p className="text-sm text-[var(--text-1)] mt-4">
-              Currently, Alma has only been tested on macOS with Apple Silicon (M-series chips).
+              We are actively developing the current release. More builds coming soon. Currently, Ornata has only been tested on macOS with Apple Silicon (M-series chips).
             </p>
           </div>
 
@@ -309,30 +308,42 @@ function MainContent() {
               },
               {
                 title: t.download.linux,
+                disabled: true,
                 items: [`${t.download.x64} ${t.download.appImage}`, `${t.download.x64} ${t.download.deb}`],
               },
             ].map((col) => (
               <div
                 key={col.title}
-                className="p-10 md:p-12 rounded-2xl bg-[var(--surface-1)]/70"
+                className={`relative p-10 md:p-12 rounded-2xl bg-[var(--surface-1)]/70 ${
+                  col.disabled ? 'opacity-70' : ''
+                }`}
               >
                 <h3 className="text-xl font-semibold tracking-tight mb-6">{col.title}</h3>
                 <div className="space-y-3 text-sm">
                   {col.items.map((label, idx) => (
-                    <a
+                    <div
                       key={idx}
-                      href="#"
-                      className="block rounded-[10px] bg-[var(--surface-0)]/70 px-4 py-3 hover:bg-[var(--surface-0)] transition-colors"
+                      className={`block rounded-[10px] bg-[var(--surface-0)]/70 px-4 py-3 ${
+                        col.disabled ? 'text-[var(--text-1)]/70' : 'hover:bg-[var(--surface-0)] transition-colors'
+                      }`}
                     >
-                      {label}
-                    </a>
+                      {col.disabled ? (
+                        <span>{label}</span>
+                      ) : (
+                        <a href="#" className="block">
+                          {label}
+                        </a>
+                      )}
+                    </div>
                   ))}
                 </div>
+                {col.disabled ? (
+                  <div className="absolute inset-0 rounded-2xl bg-[var(--surface-0)]/60" />
+                ) : null}
               </div>
             ))}
           </div>
 
-          <p className="text-sm text-[var(--text-1)] mt-8">{t.download.comingSoon}</p>
         </div>
       </section>
 

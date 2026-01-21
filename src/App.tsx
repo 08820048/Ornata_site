@@ -67,28 +67,32 @@ function MainContent() {
         {
           title: 'Full Markdown, exactly as expected',
           description: 'Write in standard Markdown without extensions or surprises.Headings, lists, tables, formulas, and code blocks render cleanly —the way plain text should.',
+          image: '/img/features1.png',
         },
         {
           title: 'Instant, even with large files',
           description: 'Open and edit large Markdown files without delay.Scrolling, typing, and rendering stay smooth,、no matter how long the document grows.',
+          image: '/img/features2.png',
         },
         {
           title: 'Works naturally with Git',
           description: 'Write Markdown as plain text files that fit perfectly into Git workflows.Clean diffs, readable history,and no hidden metadata.',
+          image: '/img/features3.png',
         },
         {
           title: 'Edit and preview, side by side',
           description: 'Write in plain Markdown while preview updates instantly.Switch between edit, preview, or split view —always knowing exactly what you’re writing.',
+          image: '/img/features4.png',
         },
         {
           title: 'Designed to stay out of your way',
           description: 'No panels you don’t need. No visual noise. Just a quiet space to think and write.',
+          image: '/img/features5.png',
         },
       ],
     },
     download: {
       title: 'Download',
-      subtitle: 'Available for macOS, Windows, and Linux',
       macOS: 'macOS',
       windows: 'Windows',
       linux: 'Linux',
@@ -265,11 +269,15 @@ function MainContent() {
                   <p className="text-[var(--text-1)] leading-relaxed">{item.description}</p>
                 </div>
                 <div
-                  className={`rounded-[10px] bg-[var(--surface-1)]/70 aspect-[4/3] flex items-center justify-center text-sm text-[var(--text-1)] ${
+                  className={`rounded-[10px] bg-[var(--surface-1)]/70 aspect-[4/3] p-4 ${
                     idx % 2 === 1 ? 'md:order-1' : ''
                   }`}
                 >
-                  Image placeholder
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="h-full w-full object-contain"
+                  />
                 </div>
               </div>
             ))}
@@ -280,10 +288,10 @@ function MainContent() {
       <section id="download" className="py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-16">
-            <span className="text-orange-600 font-mono text-xs uppercase tracking-widest">
-              {t.download.subtitle}
-            </span>
             <h2 className="text-4xl font-semibold tracking-tighter mt-4">{t.download.title}</h2>
+            <p className="text-sm text-[var(--text-1)] mt-4">
+              Currently, Alma has only been tested on macOS with Apple Silicon (M-series chips).
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

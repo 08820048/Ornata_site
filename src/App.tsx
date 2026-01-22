@@ -62,7 +62,7 @@ function MainContent() {
       gsap.fromTo(
         '.js-nav',
         { autoAlpha: 0, y: -12 },
-        { autoAlpha: 1, y: 0, duration: 0.85, ease: 'power2.out' }
+        { autoAlpha: 1, y: 0, duration: 1.05, ease: 'power2.out' }
       );
 
       gsap.set('.js-hero-line', {
@@ -84,9 +84,9 @@ function MainContent() {
             yPercent: 0,
             rotateX: 0,
             filter: 'blur(0px)',
-            duration: 1.25,
+            duration: 1.65,
             ease: 'power4.out',
-            stagger: 0.12,
+            stagger: 0.16,
           },
           0.05
         )
@@ -96,16 +96,16 @@ function MainContent() {
             autoAlpha: 1,
             y: 0,
             filter: 'blur(0px)',
-            duration: 0.9,
+            duration: 1.25,
             ease: 'power3.out',
-            stagger: 0.012,
+            stagger: 0.02,
           },
-          0.25
+          0.35
         )
         .to(
           '.js-hero-actions > *',
-          { autoAlpha: 1, y: 0, duration: 0.95, ease: 'power3.out', stagger: 0.12 },
-          0.55
+          { autoAlpha: 1, y: 0, duration: 1.25, ease: 'power3.out', stagger: 0.16 },
+          0.85
         );
 
       gsap.utils.toArray<HTMLElement>('.js-reveal').forEach((el) => {

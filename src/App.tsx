@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Calendar, ChevronDown, Download } from 'lucide-react';
 import { featureItems } from './content/features';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
 
@@ -39,9 +41,68 @@ function useActiveSection(sectionIds: SectionId[]) {
 }
 
 function MainContent() {
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     document.documentElement.dataset.theme = 'dark';
     document.documentElement.lang = 'en';
+  }, []);
+
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    const ctx = gsap.context(() => {
+      gsap.set('.js-reveal', { autoAlpha: 0, y: 24 });
+
+      gsap.fromTo(
+        '.js-nav',
+        { autoAlpha: 0, y: -12 },
+        { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+      );
+
+      const heroTl = gsap.timeline();
+      heroTl
+        .fromTo(
+          '.js-hero-title',
+          { autoAlpha: 0, y: 18 },
+          { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out' },
+          0
+        )
+        .fromTo(
+          '.js-hero-tagline',
+          { autoAlpha: 0, y: 14 },
+          { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' },
+          0.12
+        )
+        .fromTo(
+          '.js-hero-actions > *',
+          { autoAlpha: 0, y: 10 },
+          { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power3.out', stagger: 0.08 },
+          0.2
+        );
+
+      gsap.utils.toArray<HTMLElement>('.js-reveal').forEach((el) => {
+        gsap.to(el, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none none',
+            once: true,
+          },
+        });
+      });
+    }, root);
+
+    return () => ctx.revert();
   }, []);
 
   const t = {
@@ -152,8 +213,11 @@ function MainContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--surface-0)] text-[var(--text-0)] antialiased selection:bg-orange-500 selection:text-white">
-      <nav className="fixed top-0 w-full z-50 bg-[var(--surface-0)]/90 backdrop-blur-sm shadow-sm">
+    <div
+      ref={rootRef}
+      className="min-h-screen bg-[var(--surface-0)] text-[var(--text-0)] antialiased selection:bg-orange-500 selection:text-white"
+    >
+      <nav className="js-nav fixed top-0 w-full z-50 bg-[var(--surface-0)]/90 backdrop-blur-sm shadow-sm">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <button
             onClick={() => scrollToSection('home')}
@@ -245,14 +309,14 @@ function MainContent() {
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 gap-10 items-center">
             <div className="max-w-4xl">
-              <h1 className="text-6xl md:text-8xl lg:text-9xl tracking-tighter font-semibold leading-[0.95] text-[var(--text-0)] mb-8">
+              <h1 className="js-hero-title text-6xl md:text-8xl lg:text-9xl tracking-tighter font-semibold leading-[0.95] text-[var(--text-0)] mb-8">
                 {t.hero.titleLine1} <br />
                 {t.hero.titleLine2}
               </h1>
-              <p className="text-sm md:text-base text-[var(--text-1)] max-w-md">
+              <p className="js-hero-tagline text-sm md:text-base text-[var(--text-1)] max-w-md">
                 {t.hero.tagline}
               </p>
-              <div className="mt-10 flex gap-4 flex-wrap">
+              <div className="js-hero-actions mt-10 flex gap-4 flex-wrap">
                 <a
                   href="#download"
                   className="inline-flex items-center justify-center gap-2 hover:bg-orange-600 transition-colors duration-300 text-sm font-medium !text-white hover:!text-white tracking-wide bg-neutral-900 px-8 py-4 rounded-[10px]"
@@ -292,7 +356,7 @@ function MainContent() {
             {t.features.items.map((item, idx) => (
               <div
                 key={item.title}
-                className="grid grid-cols-1 md:grid-cols-2 gap-10 items-center"
+                className="js-reveal grid grid-cols-1 md:grid-cols-2 gap-10 items-center"
               >
                 <div className={`space-y-4 ${idx % 2 === 1 ? 'md:order-2' : ''}`}>
                   <h3 className="text-2xl font-semibold text-[var(--text-0)] tracking-tight">
@@ -319,7 +383,7 @@ function MainContent() {
 
       <section id="download" className="py-24">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="mb-16">
+          <div className="js-reveal mb-16">
             <h2 className="text-4xl font-semibold tracking-tighter mt-4">{t.download.title}</h2>
             <p className="text-sm text-[var(--text-1)] mt-4">
               We are actively developing the current release. More builds coming soon. Currently, Ornata has only been tested on macOS with Apple Silicon (M-series chips).
@@ -330,7 +394,7 @@ function MainContent() {
             {downloadColumns.map((col) => (
               <div
                 key={col.title}
-                className={`relative p-10 md:p-12 rounded-2xl bg-[var(--surface-1)]/70 ${
+                className={`js-reveal relative p-10 md:p-12 rounded-2xl bg-[var(--surface-1)]/70 ${
                   col.disabled ? 'opacity-70' : ''
                 }`}
               >
@@ -365,13 +429,13 @@ function MainContent() {
 
       <section id="faq" className="py-24">
         <div className="max-w-3xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold tracking-tighter mb-12">{t.faq.title}</h2>
+          <h2 className="js-reveal text-3xl font-semibold tracking-tighter mb-12">{t.faq.title}</h2>
 
           <div className="space-y-4">
             {t.faq.items.map((item, idx) => (
               <details
                 key={idx}
-                className="group rounded-2xl bg-[var(--surface-1)]/70 cursor-pointer"
+                className="js-reveal group rounded-2xl bg-[var(--surface-1)]/70 cursor-pointer"
               >
                 <summary className="flex justify-between items-center p-6 font-medium text-lg hover:bg-[var(--surface-1)] transition-colors rounded-2xl">
                   <span>{item.q}</span>
@@ -388,19 +452,19 @@ function MainContent() {
 
       <footer className="py-24 bg-[var(--surface-0)]" id="book">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center text-center">
-          <h2 className="text-4xl md:text-6xl font-semibold tracking-tighter mb-8">
+          <h2 className="js-reveal text-4xl md:text-6xl font-semibold tracking-tighter mb-8">
             {t.footer.headline}
           </h2>
 
           <a
             href="#download"
-            className="inline-flex items-center gap-3 bg-orange-600 text-white px-10 py-5 text-lg font-medium hover:bg-neutral-900 transition-colors duration-300 rounded-[10px]"
+            className="js-reveal inline-flex items-center gap-3 bg-orange-600 text-white px-10 py-5 text-lg font-medium hover:bg-neutral-900 transition-colors duration-300 rounded-[10px]"
           >
             {t.footer.cta}
             <Calendar className="w-5 h-5" />
           </a>
 
-          <div className="mt-16 pt-6 w-full flex flex-col items-center text-sm text-[var(--text-1)]">
+          <div className="js-reveal mt-16 pt-6 w-full flex flex-col items-center text-sm text-[var(--text-1)]">
             <p>
               © 2026 Ornata. Made with love by{' '}
               <a

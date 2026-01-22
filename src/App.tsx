@@ -62,35 +62,74 @@ function MainContent() {
       gsap.fromTo(
         '.js-nav',
         { autoAlpha: 0, y: -12 },
-        { autoAlpha: 1, y: 0, duration: 0.6, ease: 'power2.out' }
+        { autoAlpha: 1, y: 0, duration: 0.85, ease: 'power2.out' }
       );
+
+      gsap.set('.js-hero-line', {
+        autoAlpha: 0,
+        yPercent: 120,
+        rotateX: 10,
+        transformOrigin: '0% 100%',
+        filter: 'blur(10px)',
+      });
+      gsap.set('.js-hero-word', { autoAlpha: 0, y: 10, filter: 'blur(8px)' });
+      gsap.set('.js-hero-actions > *', { autoAlpha: 0, y: 10 });
 
       const heroTl = gsap.timeline();
       heroTl
-        .fromTo(
-          '.js-hero-title',
-          { autoAlpha: 0, y: 18 },
-          { autoAlpha: 1, y: 0, duration: 0.9, ease: 'power3.out' },
-          0
+        .to(
+          '.js-hero-line',
+          {
+            autoAlpha: 1,
+            yPercent: 0,
+            rotateX: 0,
+            filter: 'blur(0px)',
+            duration: 1.25,
+            ease: 'power4.out',
+            stagger: 0.12,
+          },
+          0.05
         )
-        .fromTo(
-          '.js-hero-tagline',
-          { autoAlpha: 0, y: 14 },
-          { autoAlpha: 1, y: 0, duration: 0.7, ease: 'power3.out' },
-          0.12
+        .to(
+          '.js-hero-word',
+          {
+            autoAlpha: 1,
+            y: 0,
+            filter: 'blur(0px)',
+            duration: 0.9,
+            ease: 'power3.out',
+            stagger: 0.012,
+          },
+          0.25
         )
-        .fromTo(
+        .to(
           '.js-hero-actions > *',
-          { autoAlpha: 0, y: 10 },
-          { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power3.out', stagger: 0.08 },
-          0.2
+          { autoAlpha: 1, y: 0, duration: 0.95, ease: 'power3.out', stagger: 0.12 },
+          0.55
         );
 
       gsap.utils.toArray<HTMLElement>('.js-reveal').forEach((el) => {
         gsap.to(el, {
           autoAlpha: 1,
           y: 0,
-          duration: 0.8,
+          duration: 1.1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 85%',
+            toggleActions: 'play none none reverse',
+          },
+        });
+      });
+
+      gsap.utils.toArray<HTMLElement>('.js-feature-image').forEach((el) => {
+        const side = el.dataset.side;
+        const fromX = side === 'left' ? -140 : 140;
+        gsap.set(el, { autoAlpha: 0, x: fromX });
+        gsap.to(el, {
+          autoAlpha: 1,
+          x: 0,
+          duration: 1.9,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: el,
@@ -165,6 +204,8 @@ function MainContent() {
       cta: 'Download Ornata',
     },
   };
+
+  const heroTaglineWords = useMemo(() => t.hero.tagline.split(/\s+/).filter(Boolean), [t.hero.tagline]);
 
   const sectionIds = useMemo<SectionId[]>(() => ['home', 'features', 'download', 'faq', 'book'], []);
   const activeSection = useActiveSection(sectionIds);
@@ -309,11 +350,20 @@ function MainContent() {
           <div className="grid grid-cols-1 gap-10 items-center">
             <div className="max-w-4xl">
               <h1 className="js-hero-title text-6xl md:text-8xl lg:text-9xl tracking-tighter font-semibold leading-[0.95] text-[var(--text-0)] mb-8">
-                {t.hero.titleLine1} <br />
-                {t.hero.titleLine2}
+                <span className="block overflow-hidden">
+                  <span className="js-hero-line block will-change-transform">{t.hero.titleLine1}</span>
+                </span>
+                <span className="block overflow-hidden">
+                  <span className="js-hero-line block will-change-transform">{t.hero.titleLine2}</span>
+                </span>
               </h1>
               <p className="js-hero-tagline text-sm md:text-base text-[var(--text-1)] max-w-md">
-                {t.hero.tagline}
+                {heroTaglineWords.map((word, idx) => (
+                  <span key={`${word}-${idx}`}>
+                    <span className="js-hero-word inline-block will-change-transform">{word}</span>
+                    {idx === heroTaglineWords.length - 1 ? '' : ' '}
+                  </span>
+                ))}
               </p>
               <div className="js-hero-actions mt-10 flex gap-4 flex-wrap">
                 <a
@@ -366,7 +416,8 @@ function MainContent() {
                   <p className="text-[var(--text-1)] leading-relaxed">{item.description}</p>
                 </div>
                 <div
-                  className={`rounded-[10px] bg-[var(--surface-1)]/70 aspect-[4/3] p-4 ${
+                  data-side={idx % 2 === 1 ? 'left' : 'right'}
+                  className={`js-feature-image rounded-[10px] bg-[var(--surface-1)]/70 aspect-[4/3] p-4 ${
                     idx % 2 === 1 ? 'md:order-1' : ''
                   }`}
                 >

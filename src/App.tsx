@@ -6,6 +6,107 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
 
+type UpgradeLinkApiResponse<T> = {
+  code: number;
+  msg: string;
+  traceId?: string;
+  docs?: string;
+  data: T;
+};
+
+type UpgradeLinkSeriesPoint = {
+  timeData: string;
+  data: number;
+};
+
+type UpgradeLinkAppStatistics = {
+  yesterdayDownloadCount: number;
+  totalDownloadCount: number;
+  yesterdayAppGetStrategyCount: number;
+  totalAppGetStrategyCount: number;
+  yesterdayAppUpgradeCount: number;
+  totalAppUpgradeCount: number;
+  yesterdayAppStartCount: number;
+  totalAppStartCount: number;
+  downloadCount7Day: UpgradeLinkSeriesPoint[];
+  appGetStrategyCount7Day: UpgradeLinkSeriesPoint[];
+  appUpgradeCount7Day: UpgradeLinkSeriesPoint[];
+  appStartCount7Day: UpgradeLinkSeriesPoint[];
+};
+
+function formatTimeData(timeData: string) {
+  if (!/^\d{6}$/.test(timeData)) return timeData;
+  const month = Number(timeData.slice(2, 4));
+  const day = Number(timeData.slice(4, 6));
+  if (!Number.isFinite(month) || !Number.isFinite(day)) return timeData;
+  return `${month}/${day}`;
+}
+
+/**
+ * 拉取 UpgradeLink 的 App 统计信息（通过本地代理签名请求）。
+ */
+async function fetchUpgradeLinkAppStatistics(options?: { appKey?: string }) {
+  const url = new URL('/api/upgradelink/app/statistics', window.location.origin);
+  if (options?.appKey) url.searchParams.set('appKey', options.appKey);
+  const response = await fetch(url, { method: 'GET' });
+  const json = (await response.json()) as UpgradeLinkApiResponse<UpgradeLinkAppStatistics>;
+
+  if (!response.ok || json.code !== 0) {
+    const message = json?.msg || `Request failed: ${response.status}`;
+    throw new Error(message);
+  }
+
+  return json.data;
+}
+
+type UpgradeLinkAppReportRequest = {
+  eventType: string;
+  appKey?: string;
+  timestamp?: string;
+  devModelKey?: string;
+  devKey?: string;
+  versionCode: number;
+  eventData: {
+    launchTime?: string;
+    downloadVersionCode?: number;
+    upgradeVersionCode?: number;
+    code?: number;
+  };
+};
+
+/**
+ * 上报 UpgradeLink 的应用事件（通过本地代理签名请求）。
+ */
+async function postUpgradeLinkAppReport(payload: UpgradeLinkAppReportRequest) {
+  const url = new URL('/api/upgradelink/app/report', window.location.origin);
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const json = (await response.json()) as UpgradeLinkApiResponse<unknown>;
+
+  if (!response.ok || json.code !== 0) {
+    const message = json?.msg || `Request failed: ${response.status}`;
+    throw new Error(message);
+  }
+}
+
+/**
+ * 读取当前路径名，并在浏览器前进/后退时同步更新。
+ */
+function usePathname() {
+  const [pathname, setPathname] = useState(() => window.location.pathname);
+
+  useEffect(() => {
+    const onPopState = () => setPathname(window.location.pathname);
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  return pathname;
+}
+
 function useActiveSection(sectionIds: SectionId[]) {
   const [activeSection, setActiveSection] = useState<SectionId>('home');
 
@@ -40,7 +141,10 @@ function useActiveSection(sectionIds: SectionId[]) {
   return activeSection;
 }
 
-function MainContent() {
+/**
+ * 首页内容（落地页）。
+ */
+function HomePage() {
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -219,11 +323,11 @@ function MainContent() {
       items: [
         {
           label: `${t.download.appleSilicon} (.dmg)`,
-          href: 'https://api.upgrade.toolsetlink.com/v1/tauri/download?tauriKey=eBdCwsKmTLj1UJLirVAN6Q&target=darwin&arch=aarch64&versionName=0.1.1',
+          href: 'https://download.ornata.app/updates/v1/darwin/aarch64/0.1.3/Ornata_0.1.3_aarch64.dmg',
         },
         {
           label: `${t.download.intel} (.dmg)`,
-          href: 'https://api.upgrade.toolsetlink.com/v1/tauri/download?tauriKey=eBdCwsKmTLj1UJLirVAN6Q&target=darwin&arch=x86_64&versionName=0.1.1',
+          href: 'https://download.ornata.app/updates/v1/darwin/x86_64/0.1.3/Ornata_0.1.3_x64.dmg',
         },
       ],
     },
@@ -232,7 +336,7 @@ function MainContent() {
       items: [
         {
           label: `${t.download.x64} (.msi)`,
-          href: 'https://api.upgrade.toolsetlink.com/v1/tauri/download?tauriKey=eBdCwsKmTLj1UJLirVAN6Q&target=windows&arch=x86_64&versionName=0.1.1',
+          href: 'https://download.ornata.app/updates/v1/windows/x86_64/0.1.3/Ornata_0.1.3_x64_en-US.msi',
         },
       ],
     },
@@ -475,7 +579,6 @@ function MainContent() {
               </div>
             ))}
           </div>
-
         </div>
       </section>
 
@@ -536,8 +639,189 @@ function MainContent() {
   );
 }
 
+/**
+ * 统计页：仅在 /state 路由展示 UpgradeLink 统计信息。
+ */
+function StatePage() {
+  const [appStatistics, setAppStatistics] = useState<UpgradeLinkAppStatistics | null>(null);
+  const [appStatisticsError, setAppStatisticsError] = useState<string | null>(null);
+  const [appStatisticsLoading, setAppStatisticsLoading] = useState(false);
+  const reportedRef = useRef(false);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = 'dark';
+    document.documentElement.lang = 'en';
+  }, []);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    if (reportedRef.current) return;
+    reportedRef.current = true;
+
+    const today = new Date();
+    const key = `upgradelink:app_start:${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(
+      today.getDate()
+    ).padStart(2, '0')}`;
+
+    if (window.localStorage.getItem(key) === '1') return;
+    window.localStorage.setItem(key, '1');
+
+    postUpgradeLinkAppReport({
+      eventType: 'app_start',
+      timestamp: today.toISOString(),
+      devModelKey: '',
+      devKey: '',
+      versionCode: 1,
+      eventData: { launchTime: today.toISOString() },
+    }).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const appKey = new URL(window.location.href).searchParams.get('appKey') ?? undefined;
+
+    queueMicrotask(() => {
+      setAppStatisticsLoading(true);
+      setAppStatisticsError(null);
+      setAppStatistics(null);
+    });
+
+    fetchUpgradeLinkAppStatistics({ appKey })
+      .then((data) => {
+        if (cancelled) return;
+        setAppStatistics(data);
+      })
+      .catch((error: unknown) => {
+        if (cancelled) return;
+        setAppStatisticsError(error instanceof Error ? error.message : 'Failed to load statistics');
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setAppStatisticsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[var(--surface-0)] text-[var(--text-0)] antialiased">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="rounded-2xl bg-[var(--surface-1)]/70 p-10 md:p-12">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+            <div>
+              <h1 className="text-2xl font-semibold tracking-tight">App Statistics</h1>
+              <p className="text-sm text-[var(--text-1)] mt-2">
+                Powered by UpgradeLink. Data is fetched from a signed API request.
+              </p>
+            </div>
+            {appStatisticsLoading ? (
+              <div className="text-sm text-[var(--text-1)]">Loading…</div>
+            ) : appStatisticsError ? (
+              <div className="text-sm text-red-400">{appStatisticsError}</div>
+            ) : null}
+          </div>
+
+          {appStatistics ? (
+            <>
+              <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                  <div className="text-xs text-[var(--text-1)]">Total Downloads</div>
+                  <div className="text-2xl font-semibold tracking-tight mt-1">{appStatistics.totalDownloadCount}</div>
+                </div>
+                <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                  <div className="text-xs text-[var(--text-1)]">Yesterday Downloads</div>
+                  <div className="text-2xl font-semibold tracking-tight mt-1">
+                    {appStatistics.yesterdayDownloadCount}
+                  </div>
+                </div>
+                <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                  <div className="text-xs text-[var(--text-1)]">Total Get Strategy</div>
+                  <div className="text-2xl font-semibold tracking-tight mt-1">
+                    {appStatistics.totalAppGetStrategyCount}
+                  </div>
+                </div>
+                <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                  <div className="text-xs text-[var(--text-1)]">Yesterday Get Strategy</div>
+                  <div className="text-2xl font-semibold tracking-tight mt-1">
+                    {appStatistics.yesterdayAppGetStrategyCount}
+                  </div>
+                </div>
+                <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                  <div className="text-xs text-[var(--text-1)]">Total Starts</div>
+                  <div className="text-2xl font-semibold tracking-tight mt-1">{appStatistics.totalAppStartCount}</div>
+                </div>
+                <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                  <div className="text-xs text-[var(--text-1)]">Yesterday Starts</div>
+                  <div className="text-2xl font-semibold tracking-tight mt-1">{appStatistics.yesterdayAppStartCount}</div>
+                </div>
+              </div>
+
+              {appStatistics.downloadCount7Day?.length ? (
+                <div className="mt-12">
+                  <div className="text-sm font-medium tracking-tight">Downloads (7 days)</div>
+                  <div className="mt-4 grid grid-cols-7 gap-2 items-end">
+                    {(() => {
+                      const max = Math.max(...appStatistics.downloadCount7Day.map((p) => p.data), 1);
+                      return appStatistics.downloadCount7Day.map((p) => (
+                        <div key={p.timeData} className="flex flex-col items-center gap-2">
+                          <div
+                            className="relative w-full rounded-[8px] bg-[var(--surface-0)]/70 overflow-hidden"
+                            style={{ height: 84 }}
+                          >
+                            <div
+                              className="absolute left-0 right-0 bottom-0 bg-[var(--button-bg)]"
+                              style={{ height: `${Math.max(6, Math.round((p.data / max) * 84))}px` }}
+                            />
+                          </div>
+                          <div className="text-[11px] text-[var(--text-1)]">{formatTimeData(p.timeData)}</div>
+                        </div>
+                      ));
+                    })()}
+                  </div>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <div className="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 opacity-70">
+              <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                <div className="text-xs text-[var(--text-1)]">Total Downloads</div>
+                <div className="text-2xl font-semibold tracking-tight mt-1">--</div>
+              </div>
+              <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                <div className="text-xs text-[var(--text-1)]">Yesterday Downloads</div>
+                <div className="text-2xl font-semibold tracking-tight mt-1">--</div>
+              </div>
+              <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                <div className="text-xs text-[var(--text-1)]">Total Get Strategy</div>
+                <div className="text-2xl font-semibold tracking-tight mt-1">--</div>
+              </div>
+              <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                <div className="text-xs text-[var(--text-1)]">Yesterday Get Strategy</div>
+                <div className="text-2xl font-semibold tracking-tight mt-1">--</div>
+              </div>
+              <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                <div className="text-xs text-[var(--text-1)]">Total Starts</div>
+                <div className="text-2xl font-semibold tracking-tight mt-1">--</div>
+              </div>
+              <div className="rounded-[10px] bg-[var(--surface-0)]/70 px-5 py-4">
+                <div className="text-xs text-[var(--text-1)]">Yesterday Starts</div>
+                <div className="text-2xl font-semibold tracking-tight mt-1">--</div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function App() {
-  return <MainContent />;
+  const pathname = usePathname();
+  const normalized = pathname.replace(/\/+$/, '') || '/';
+  if (normalized === '/state') return <StatePage />;
+  return <HomePage />;
 }
 
 export default App;

@@ -95,8 +95,7 @@ function MainContent() {
           scrollTrigger: {
             trigger: el,
             start: 'top 85%',
-            toggleActions: 'play none none none',
-            once: true,
+            toggleActions: 'play none none reverse',
           },
         });
       });

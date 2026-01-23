@@ -6,6 +6,86 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
 
+function normalizePathname(pathname: string) {
+  const trimmed = pathname.trim();
+  const withLeadingSlash = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  return withLeadingSlash.replace(/\/+$/, '') || '/';
+}
+
+function usePathname() {
+  const [pathname, setPathname] = useState(() => window.location.pathname);
+
+  useEffect(() => {
+    const onPopState = () => setPathname(window.location.pathname);
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  return pathname;
+}
+
+type MarkdownBlock =
+  | { kind: 'heading'; level: 1 | 2 | 3 | 4 | 5 | 6; text: string }
+  | { kind: 'paragraph'; text: string }
+  | { kind: 'hr' }
+  | { kind: 'list'; items: string[] };
+
+function parseMarkdownToBlocks(markdown: string): MarkdownBlock[] {
+  const lines = markdown.replaceAll('\r\n', '\n').replaceAll('\r', '\n').split('\n');
+  const blocks: MarkdownBlock[] = [];
+  let paragraphLines: string[] = [];
+
+  const flushParagraph = () => {
+    const text = paragraphLines.join('\n').trim();
+    if (text) blocks.push({ kind: 'paragraph', text });
+    paragraphLines = [];
+  };
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const raw = lines[i] ?? '';
+    const line = raw.trimEnd();
+
+    if (!line.trim()) {
+      flushParagraph();
+      continue;
+    }
+
+    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+    if (headingMatch) {
+      flushParagraph();
+      const level = headingMatch[1].length as 1 | 2 | 3 | 4 | 5 | 6;
+      blocks.push({ kind: 'heading', level, text: headingMatch[2].trim() });
+      continue;
+    }
+
+    if (/^-{3,}\s*$/.test(line)) {
+      flushParagraph();
+      blocks.push({ kind: 'hr' });
+      continue;
+    }
+
+    if (/^[-*+]\s+/.test(line)) {
+      flushParagraph();
+      const items: string[] = [];
+      let j = i;
+      while (j < lines.length) {
+        const candidate = (lines[j] ?? '').trim();
+        if (!/^[-*+]\s+/.test(candidate)) break;
+        items.push(candidate.replace(/^[-*+]\s+/, '').trim());
+        j += 1;
+      }
+      blocks.push({ kind: 'list', items });
+      i = j - 1;
+      continue;
+    }
+
+    paragraphLines.push(line);
+  }
+
+  flushParagraph();
+  return blocks;
+}
+
 function useActiveSection(sectionIds: SectionId[]) {
   const [activeSection, setActiveSection] = useState<SectionId>('home');
 
@@ -43,12 +123,25 @@ function useActiveSection(sectionIds: SectionId[]) {
 /**
  * 首页内容（落地页）。
  */
-function HomePage() {
+function HomePage(props: { openChangelog: () => void }) {
   const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     document.documentElement.dataset.theme = 'dark';
     document.documentElement.lang = 'en';
+  }, []);
+
+  useEffect(() => {
+    const hash = window.location.hash.replace(/^#/, '');
+    const target = hash as SectionId;
+    if (!hash) return;
+    if (!['home', 'features', 'download', 'faq', 'book'].includes(hash)) return;
+
+    requestAnimationFrame(() => {
+      const element = document.getElementById(target);
+      if (!element) return;
+      element.scrollIntoView({ behavior: 'smooth' });
+    });
   }, []);
 
   useLayoutEffect(() => {
@@ -151,6 +244,7 @@ function HomePage() {
       features: 'Features',
       download: 'Download',
       faq: 'FAQ',
+      changelog: 'Changelog',
       feedback: 'Feedback',
       discord: 'Discord',
       cta: 'Download App',
@@ -301,12 +395,17 @@ function HomePage() {
             >
               {t.nav.faq}
             </button>
+            <button
+              onClick={props.openChangelog}
+              className="text-sm font-medium transition-colors text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] rounded-[10px]"
+            >
+              {t.nav.changelog}
+            </button>
             <a
               href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-medium hover:text-[var(--menu-icon-active)] transition-colors"
-              style={{ color: 'var(--text-1)' }}
+              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
             >
               {t.nav.feedback}
             </a>
@@ -314,8 +413,7 @@ function HomePage() {
               href="https://discord.gg/hFkmXtrkWZ"
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-medium hover:text-[var(--menu-icon-active)] transition-colors"
-              style={{ color: 'var(--text-1)' }}
+              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
             >
               {t.nav.discord}
             </a>
@@ -323,12 +421,17 @@ function HomePage() {
           </div>
 
           <div className="md:hidden flex items-center gap-2">
+            <button
+              onClick={props.openChangelog}
+              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
+            >
+              {t.nav.changelog}
+            </button>
             <a
               href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-medium hover:text-[var(--menu-icon-active)] transition-colors"
-              style={{ color: 'var(--text-1)' }}
+              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
             >
               {t.nav.feedback}
             </a>
@@ -336,8 +439,7 @@ function HomePage() {
               href="https://discord.gg/hFkmXtrkWZ"
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-medium hover:text-[var(--menu-icon-active)] transition-colors"
-              style={{ color: 'var(--text-1)' }}
+              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
             >
               {t.nav.discord}
             </a>
@@ -538,8 +640,189 @@ function HomePage() {
   );
 }
 
+function ChangelogPage(props: { goHome: () => void; goToSection: (sectionId: SectionId) => void }) {
+  const [markdown, setMarkdown] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = 'dark';
+    document.documentElement.lang = 'en';
+    document.title = 'Changelog - Ornata';
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetch('/changelog.md')
+      .then(async (res) => {
+        if (!res.ok) throw new Error(`Failed to load changelog.md (${res.status})`);
+        return res.text();
+      })
+      .then((text) => {
+        if (cancelled) return;
+        setMarkdown(text);
+      })
+      .catch((e: unknown) => {
+        if (cancelled) return;
+        setError(e instanceof Error ? e.message : 'Failed to load changelog.md');
+      })
+      .finally(() => {
+        if (cancelled) return;
+        setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const blocks = useMemo(() => parseMarkdownToBlocks(markdown), [markdown]);
+
+  return (
+    <div className="min-h-screen bg-[var(--surface-0)] text-[var(--text-0)] antialiased">
+      <nav className="fixed top-0 w-full z-50 bg-[var(--surface-0)]/90 backdrop-blur-sm shadow-sm">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <button
+            onClick={props.goHome}
+            className="text-lg tracking-tighter font-semibold flex items-center gap-2 rounded-[10px]"
+          >
+            <img src="/logo.png" alt="Ornata" className="w-5 h-5" />
+            Ornata
+          </button>
+
+          <div className="hidden md:flex items-center gap-6">
+            <button
+              onClick={() => props.goToSection('features')}
+              className="text-sm font-medium transition-colors text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] rounded-[10px]"
+            >
+              Features
+            </button>
+            <button
+              onClick={() => props.goToSection('download')}
+              className="text-sm font-medium transition-colors text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] rounded-[10px]"
+            >
+              Download
+            </button>
+            <button
+              onClick={() => props.goToSection('faq')}
+              className="text-sm font-medium transition-colors text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] rounded-[10px]"
+            >
+              FAQ
+            </button>
+            <span className="text-sm font-medium text-[var(--menu-icon-active)]">Changelog</span>
+            <a
+              href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
+            >
+              Feedback
+            </a>
+            <a
+              href="https://discord.gg/hFkmXtrkWZ"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
+            >
+              Discord
+            </a>
+          </div>
+
+          <div className="md:hidden flex items-center gap-2">
+            <span className="text-sm font-medium text-[var(--menu-icon-active)]">Changelog</span>
+            <a
+              href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
+            >
+              Feedback
+            </a>
+            <a
+              href="https://discord.gg/hFkmXtrkWZ"
+              target="_blank"
+              rel="noreferrer"
+              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
+            >
+              Discord
+            </a>
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-3xl mx-auto px-6 pt-28 pb-24">
+        <h1 className="text-4xl font-semibold tracking-tighter">Changelog</h1>
+
+        {loading ? <div className="mt-10 text-sm text-[var(--text-1)]">Loading…</div> : null}
+        {error ? <div className="mt-10 text-sm text-red-400">{error}</div> : null}
+
+        {!loading && !error ? (
+          <div className="mt-10 space-y-6">
+            {blocks.map((block, idx) => {
+              if (block.kind === 'hr') {
+                return <hr key={idx} className="border-[var(--surface-1)]/60 my-10" />;
+              }
+
+              if (block.kind === 'heading') {
+                const classesByLevel: Record<number, string> = {
+                  1: 'text-3xl font-semibold tracking-tight',
+                  2: 'text-2xl font-semibold tracking-tight',
+                  3: 'text-xl font-semibold tracking-tight',
+                  4: 'text-lg font-semibold tracking-tight',
+                  5: 'text-base font-semibold tracking-tight',
+                  6: 'text-sm font-semibold tracking-tight',
+                };
+
+                if (block.level === 1) return <h1 key={idx} className={classesByLevel[1]}>{block.text}</h1>;
+                if (block.level === 2) return <h2 key={idx} className={classesByLevel[2]}>{block.text}</h2>;
+                if (block.level === 3) return <h3 key={idx} className={classesByLevel[3]}>{block.text}</h3>;
+                if (block.level === 4) return <h4 key={idx} className={classesByLevel[4]}>{block.text}</h4>;
+                if (block.level === 5) return <h5 key={idx} className={classesByLevel[5]}>{block.text}</h5>;
+                return <h6 key={idx} className={classesByLevel[6]}>{block.text}</h6>;
+              }
+
+              if (block.kind === 'list') {
+                return (
+                  <ul key={idx} className="list-disc pl-5 space-y-2 text-[var(--text-1)]">
+                    {block.items.map((item, itemIdx) => (
+                      <li key={itemIdx}>{item}</li>
+                    ))}
+                  </ul>
+                );
+              }
+
+              return (
+                <p key={idx} className="text-[var(--text-1)] leading-relaxed whitespace-pre-wrap">
+                  {block.text}
+                </p>
+              );
+            })}
+          </div>
+        ) : null}
+      </main>
+    </div>
+  );
+}
+
 function App() {
-  return <HomePage />;
+  const pathname = usePathname();
+  const normalized = normalizePathname(pathname);
+
+  const navigate = (to: string, options?: { hash?: SectionId }) => {
+    const target = normalizePathname(to);
+    const hash = options?.hash ? `#${options.hash}` : '';
+    const url = `${target}${hash}`;
+    if (`${normalizePathname(window.location.pathname)}${window.location.hash}` === url) return;
+    window.history.pushState({}, '', url);
+    window.dispatchEvent(new PopStateEvent('popstate'));
+    if (!options?.hash) window.scrollTo(0, 0);
+  };
+
+  const goToSection = (sectionId: SectionId) => navigate('/', { hash: sectionId });
+
+  if (normalized === '/changelog') return <ChangelogPage goHome={() => navigate('/')} goToSection={goToSection} />;
+  return <HomePage openChangelog={() => navigate('/changelog')} />;
 }
 
 export default App;

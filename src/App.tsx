@@ -316,11 +316,11 @@ function HomePage(props: { openChangelog: () => void }) {
       items: [
         {
           label: `${t.download.appleSilicon} (.dmg)`,
-          href: 'https://download.ornata.app/updates/v1/darwin/aarch64/0.1.3/Ornata_0.1.3_aarch64.dmg',
+          href: 'https://download.ornata.app/updates/v1/darwin/aarch64/0.1.4/Ornata_0.1.4_aarch64.dmg',
         },
         {
           label: `${t.download.intel} (.dmg)`,
-          href: 'https://download.ornata.app/updates/v1/darwin/x86_64/0.1.3/Ornata_0.1.3_x64.dmg',
+          href: 'https://download.ornata.app/updates/v1/darwin/x86_64/0.1.4/Ornata_0.1.4_x64.dmg',
         },
       ],
     },
@@ -328,8 +328,12 @@ function HomePage(props: { openChangelog: () => void }) {
       title: t.download.windows,
       items: [
         {
+          label: `${t.download.x64} (.exe)`,
+          href: 'https://download.ornata.app/updates/v1/windows/x86_64/0.1.4/Ornata_0.1.4_x64-setup.exe',
+        },
+        {
           label: `${t.download.x64} (.msi)`,
-          href: 'https://download.ornata.app/updates/v1/windows/x86_64/0.1.3/Ornata_0.1.3_x64_en-US.msi',
+          href: 'https://download.ornata.app/updates/v1/windows/x86_64/0.1.4/Ornata_0.1.4_x64_en-US.msi',
         },
       ],
     },

@@ -813,6 +813,68 @@ function App() {
   const pathname = usePathname();
   const normalized = normalizePathname(pathname);
 
+  useEffect(() => {
+    document.documentElement.lang = 'en';
+
+    const envSiteUrl = (import.meta.env as Record<string, string | undefined>)['VITE_SITE_URL'];
+    const existingCanonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    const canonicalOrigin = existingCanonical?.href ? new URL(existingCanonical.href).origin : undefined;
+    const siteUrl = String(envSiteUrl ?? canonicalOrigin ?? window.location.origin).replace(/\/+$/, '');
+    const isChangelog = normalized === '/changelog';
+
+    const title = isChangelog ? 'Changelog — Ornata' : 'Ornata — Write without friction';
+    const description = isChangelog
+      ? 'Product updates and release notes for Ornata.'
+      : 'Ornata is a lightweight Markdown editor for technical writing. Fast, focused, and designed to stay out of your way.';
+
+    const canonicalUrl = `${siteUrl}${isChangelog ? '/changelog' : '/'}`;
+    const ogImageUrl = `${siteUrl}/logo.png`;
+
+    document.title = title;
+
+    const setMetaName = (name: string, content: string) => {
+      let el = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('name', name);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    const setMetaProperty = (property: string, content: string) => {
+      let el = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute('property', property);
+        document.head.appendChild(el);
+      }
+      el.setAttribute('content', content);
+    };
+
+    const setCanonical = (href: string) => {
+      let el = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+      if (!el) {
+        el = document.createElement('link');
+        el.setAttribute('rel', 'canonical');
+        document.head.appendChild(el);
+      }
+      el.setAttribute('href', href);
+    };
+
+    setMetaName('description', description);
+    setMetaName('twitter:title', title);
+    setMetaName('twitter:description', description);
+    setMetaName('twitter:image', ogImageUrl);
+
+    setMetaProperty('og:title', title);
+    setMetaProperty('og:description', description);
+    setMetaProperty('og:url', canonicalUrl);
+    setMetaProperty('og:image', ogImageUrl);
+
+    setCanonical(canonicalUrl);
+  }, [normalized]);
+
   const navigate = (to: string, options?: { hash?: SectionId }) => {
     const target = normalizePathname(to);
     const hash = options?.hash ? `#${options.hash}` : '';

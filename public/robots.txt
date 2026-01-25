@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ornata.app/sitemap.xml

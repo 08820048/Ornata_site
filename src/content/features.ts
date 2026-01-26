@@ -24,9 +24,9 @@ export const featureItems: FeatureItem[] = [
     image: 'img/features3.png',
   },
   {
-    title: 'Edit and preview, side by side',
+    title: 'Write visually, powered by Markdown',
     description:
-      'Write in plain Markdown while preview updates instantly.Switch between edit, preview, or split view —always knowing exactly what you’re writing.',
+      'Edit in a true WYSIWYG experience where what you see is exactly what you’re writing.Switch freely between visual editing, raw Markdown, or split view — without losing context or control.',
     image: 'img/features4.png',
   },
   {

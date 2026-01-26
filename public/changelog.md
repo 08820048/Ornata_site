@@ -36,3 +36,16 @@
 - Added Export to HTML support. Available via File → Export → Export as HTML.
 - Improved the background color of the table of contents panel in Dark Mode.
 - Fixed an issue where the Change Folder button at the top of the file management sidebar was unresponsive.
+
+---
+
+### v0.1.5
+- Added support for WYSIWYG mode, enabled by default and can be turned off in Settings.
+- Adjusted the cursor color in the editor.
+- Fixed multiple known issues.
+- Optimized the display of system menu descriptions.
+- Added sound feedback for user actions, which can be disabled in the settings.
+- Adjusted the entry point for the software update feature, moving it to the system menu in the top-left corner.
+- Adjusted the color style of folder icons in the file manager.
+- Added a context menu to the editor area.
+- Improved the editing experience in WYSIWYG mode.

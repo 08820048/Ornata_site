@@ -3,6 +3,7 @@ import { Calendar, ChevronDown, Download } from 'lucide-react';
 import { featureItems } from './content/features';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import BlurText from '@/components/BlurText';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
 
@@ -161,48 +162,15 @@ function HomePage(props: { openChangelog: () => void }) {
         { autoAlpha: 1, y: 0, duration: 1.05, ease: 'power2.out' }
       );
 
-      gsap.set('.js-hero-line', {
-        autoAlpha: 0,
-        yPercent: 120,
-        rotateX: 10,
-        transformOrigin: '0% 100%',
-        filter: 'blur(10px)',
-      });
-      gsap.set('.js-hero-word', { autoAlpha: 0, y: 10, filter: 'blur(8px)' });
       gsap.set('.js-hero-actions > *', { autoAlpha: 0, y: 10 });
 
-      const heroTl = gsap.timeline();
-      heroTl
-        .to(
-          '.js-hero-line',
-          {
-            autoAlpha: 1,
-            yPercent: 0,
-            rotateX: 0,
-            filter: 'blur(0px)',
-            duration: 1.65,
-            ease: 'power4.out',
-            stagger: 0.16,
-          },
-          0.05
-        )
-        .to(
-          '.js-hero-word',
-          {
-            autoAlpha: 1,
-            y: 0,
-            filter: 'blur(0px)',
-            duration: 1.25,
-            ease: 'power3.out',
-            stagger: 0.02,
-          },
-          0.35
-        )
-        .to(
-          '.js-hero-actions > *',
-          { autoAlpha: 1, y: 0, duration: 1.25, ease: 'power3.out', stagger: 0.16 },
-          0.85
-        );
+      gsap.to('.js-hero-actions > *', {
+        autoAlpha: 1,
+        y: 0,
+        duration: 1.25,
+        ease: 'power3.out',
+        stagger: 0.16,
+      });
 
       gsap.utils.toArray<HTMLElement>('.js-reveal').forEach((el) => {
         gsap.to(el, {
@@ -302,7 +270,6 @@ function HomePage(props: { openChangelog: () => void }) {
     },
   };
 
-  const heroTaglineWords = useMemo(() => t.hero.tagline.split(/\s+/).filter(Boolean), [t.hero.tagline]);
 
   const sectionIds = useMemo<SectionId[]>(() => ['home', 'features', 'download', 'faq', 'book'], []);
   const activeSection = useActiveSection(sectionIds);
@@ -459,21 +426,31 @@ function HomePage(props: { openChangelog: () => void }) {
           <div className="grid grid-cols-1 gap-10 items-center">
             <div className="max-w-4xl">
               <h1 className="js-hero-title text-6xl md:text-8xl lg:text-9xl tracking-tighter font-semibold leading-[0.95] text-[var(--text-0)] mb-8">
-                <span className="block overflow-hidden">
-                  <span className="js-hero-line block will-change-transform">{t.hero.titleLine1}</span>
-                </span>
-                <span className="block overflow-hidden">
-                  <span className="js-hero-line block will-change-transform">{t.hero.titleLine2}</span>
-                </span>
+                <BlurText
+                  text={t.hero.titleLine1}
+                  animateBy="words"
+                  direction="top"
+                  delay={140}
+                  stepDuration={0.35}
+                  className="block"
+                />
+                <BlurText
+                  text={t.hero.titleLine2}
+                  animateBy="words"
+                  direction="bottom"
+                  delay={140}
+                  stepDuration={0.35}
+                  className="block"
+                />
               </h1>
-              <p className="js-hero-tagline text-sm md:text-base text-[var(--text-1)] max-w-md">
-                {heroTaglineWords.map((word, idx) => (
-                  <span key={`${word}-${idx}`}>
-                    <span className="js-hero-word inline-block will-change-transform">{word}</span>
-                    {idx === heroTaglineWords.length - 1 ? '' : ' '}
-                  </span>
-                ))}
-              </p>
+              <BlurText
+                text={t.hero.tagline}
+                animateBy="words"
+                direction="top"
+                delay={60}
+                stepDuration={0.3}
+                className="js-hero-tagline text-sm md:text-base text-[var(--text-1)] max-w-md"
+              />
               <div className="js-hero-actions mt-10 flex gap-4 flex-wrap">
                 <a
                   href="#download"

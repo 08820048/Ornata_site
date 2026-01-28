@@ -4,6 +4,7 @@ import { featureItems } from './content/features';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import BlurText from '@/components/BlurText';
+import PixelBlast from '@/components/PixelBlast';
 
 type SectionId = 'home' | 'problem' | 'features' | 'download' | 'faq' | 'book';
 
@@ -422,6 +423,7 @@ function HomePage(props: { openChangelog: () => void }) {
         id="home"
         className="relative min-h-screen overflow-hidden flex items-center"
       >
+        <PixelBlast className="absolute inset-0 z-0" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 gap-10 items-center">
             <div className="max-w-4xl">

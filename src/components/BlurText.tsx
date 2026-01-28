@@ -17,6 +17,9 @@ type BlurTextProps = {
   stepDuration?: number;
 };
 
+/**
+ * 根据起始状态和中间状态快照拼接出 keyframes。
+ */
 const buildKeyframes = (
   from: Record<string, string | number>,
   steps: Array<Record<string, string | number>>
@@ -30,6 +33,9 @@ const buildKeyframes = (
   return keyframes;
 };
 
+/**
+ * 基于视口进入触发的模糊文字入场动画组件。
+ */
 const BlurText: React.FC<BlurTextProps> = ({
   text = '',
   delay = 200,

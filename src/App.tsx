@@ -326,95 +326,98 @@ function HomePage(props: { openChangelog: () => void }) {
       ref={rootRef}
       className="min-h-screen bg-[var(--surface-0)] text-[var(--text-0)] antialiased"
     >
-      <nav className="js-nav fixed top-0 w-full z-50 bg-[var(--surface-0)]/90 backdrop-blur-sm shadow-sm">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <button
-            onClick={() => scrollToSection('home')}
-            className="text-lg tracking-tighter font-semibold flex items-center gap-2 rounded-[10px]"
-          >
-            <img src="/logo.png" alt="Ornata" className="w-5 h-5" />
-            Ornata
-          </button>
+      <nav className="js-nav fixed top-4 w-full z-50">
+        <div className="max-w-7xl mx-auto px-6 flex justify-center">
+          <div className="w-full md:w-auto rounded-full bg-white/20 text-white backdrop-blur-[32px] shadow-[0_12px_40px_rgba(0,0,0,0.25)]">
+            <div className="px-6 h-14 flex items-center justify-between gap-6">
+              <button
+                onClick={() => scrollToSection('home')}
+                className="text-sm font-semibold tracking-tight flex items-center gap-2"
+              >
+                <img src="/logo.png" alt="Ornata" className="w-5 h-5" />
+                Ornata
+              </button>
 
-          <div className="hidden md:flex items-center gap-6">
-            <button
-              onClick={() => scrollToSection('features')}
-              className={`text-sm font-medium transition-colors ${
-                activeSection === 'features'
-                  ? 'text-[var(--menu-icon-active)]'
-                  : 'text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)]'
-              } rounded-[10px]`}
-            >
-              {t.nav.features}
-            </button>
-            <button
-              onClick={() => scrollToSection('download')}
-              className={`text-sm font-medium transition-colors ${
-                activeSection === 'download'
-                  ? 'text-[var(--menu-icon-active)]'
-                  : 'text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)]'
-              } rounded-[10px]`}
-            >
-              {t.nav.download}
-            </button>
-            <button
-              onClick={() => scrollToSection('faq')}
-              className={`text-sm font-medium transition-colors ${
-                activeSection === 'faq'
-                  ? 'text-[var(--menu-icon-active)]'
-                  : 'text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)]'
-              } rounded-[10px]`}
-            >
-              {t.nav.faq}
-            </button>
-            <button
-              onClick={props.openChangelog}
-              className="text-sm font-medium transition-colors text-[var(--menu-icon)] hover:text-[var(--menu-icon-active)] rounded-[10px]"
-            >
-              {t.nav.changelog}
-            </button>
-            <a
-              href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
-            >
-              {t.nav.feedback}
-            </a>
-            <a
-              href="https://discord.gg/hFkmXtrkWZ"
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
-            >
-              {t.nav.discord}
-            </a>
+              <div className="hidden md:flex items-center gap-6">
+                <button
+                  onClick={() => scrollToSection('features')}
+                  className={`text-sm font-medium transition-colors ${
+                    activeSection === 'features'
+                      ? 'text-white'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  {t.nav.features}
+                </button>
+                <button
+                  onClick={() => scrollToSection('download')}
+                  className={`text-sm font-medium transition-colors ${
+                    activeSection === 'download'
+                      ? 'text-white'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  {t.nav.download}
+                </button>
+                <button
+                  onClick={() => scrollToSection('faq')}
+                  className={`text-sm font-medium transition-colors ${
+                    activeSection === 'faq'
+                      ? 'text-white'
+                      : 'text-white/70 hover:text-white'
+                  }`}
+                >
+                  {t.nav.faq}
+                </button>
+                <button
+                  onClick={props.openChangelog}
+                  className="text-sm font-medium transition-colors text-white/70 hover:text-white"
+                >
+                  {t.nav.changelog}
+                </button>
+                <a
+                  href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+                >
+                  {t.nav.feedback}
+                </a>
+                <a
+                  href="https://discord.gg/hFkmXtrkWZ"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+                >
+                  {t.nav.discord}
+                </a>
+              </div>
 
-          </div>
-
-          <div className="md:hidden flex items-center gap-2">
-            <button
-              onClick={props.openChangelog}
-              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
-            >
-              {t.nav.changelog}
-            </button>
-            <a
-              href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
-            >
-              {t.nav.feedback}
-            </a>
-            <a
-              href="https://discord.gg/hFkmXtrkWZ"
-              target="_blank"
-              rel="noreferrer"
-              className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
-            >
-              {t.nav.discord}
-            </a>
+              <div className="md:hidden flex items-center gap-2">
+                <button
+                  onClick={props.openChangelog}
+                  className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+                >
+                  {t.nav.changelog}
+                </button>
+                <a
+                  href="https://ornata.userjot.com/?cursor=1&order=top&limit=10&status=%5B%22PENDING%22%2C%22REVIEW%22%2C%22PLANNED%22%2C%22PROGRESS%22%5D"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+                >
+                  {t.nav.feedback}
+                </a>
+                <a
+                  href="https://discord.gg/hFkmXtrkWZ"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm font-medium text-white/70 hover:text-white transition-colors"
+                >
+                  {t.nav.discord}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </nav>

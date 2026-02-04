@@ -384,7 +384,7 @@ function HomePage(props: { openChangelog: () => void }) {
                   {t.nav.feedback}
                 </a>
                 <a
-                  href="https://discord.gg/hFkmXtrkWZ"
+                  href="https://discord.gg/DrmTuEYk7n"
                   target="_blank"
                   rel="noreferrer"
                   className="text-sm font-medium text-white/70 hover:text-white transition-colors"
@@ -409,7 +409,7 @@ function HomePage(props: { openChangelog: () => void }) {
                   {t.nav.feedback}
                 </a>
                 <a
-                  href="https://discord.gg/hFkmXtrkWZ"
+                  href="https://discord.gg/DrmTuEYk7n"
                   target="_blank"
                   rel="noreferrer"
                   className="text-sm font-medium text-white/70 hover:text-white transition-colors"
@@ -466,7 +466,7 @@ function HomePage(props: { openChangelog: () => void }) {
                   {t.hero.primaryCta}
                 </a>
                 <a
-                  href="https://discord.gg/hFkmXtrkWZ"
+                  href="https://discord.gg/DrmTuEYk7n"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center justify-center gap-2 transition-colors duration-300 text-sm font-medium tracking-wide bg-[var(--button-bg)] hover:bg-[var(--button-bg-hover)] px-8 py-4 rounded-[10px]"
@@ -706,7 +706,7 @@ function ChangelogPage(props: { goHome: () => void; goToSection: (sectionId: Sec
               Feedback
             </a>
             <a
-              href="https://discord.gg/hFkmXtrkWZ"
+              href="https://discord.gg/DrmTuEYk7n"
               target="_blank"
               rel="noreferrer"
               className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"
@@ -726,7 +726,7 @@ function ChangelogPage(props: { goHome: () => void; goToSection: (sectionId: Sec
               Feedback
             </a>
             <a
-              href="https://discord.gg/hFkmXtrkWZ"
+              href="https://discord.gg/DrmTuEYk7n"
               target="_blank"
               rel="noreferrer"
               className="text-sm font-medium text-[var(--text-1)] hover:text-[var(--menu-icon-active)] transition-colors"

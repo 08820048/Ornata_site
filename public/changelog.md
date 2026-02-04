@@ -1,6 +1,7 @@
+## Ornata软件更新日志
 
 ### v0.1.0
-- Initial Release
+- 初始版本发布
 
 ---
 
@@ -14,7 +15,7 @@
 - Unified border radius across the interface
 - Other minor improvements and fixes
 
----
+----
 
 ### v0.1.2
 - Fixed an issue where the update check prompt kept appearing in the bottom-left corner
@@ -49,3 +50,28 @@
 - Adjusted the color style of folder icons in the file manager.
 - Added a context menu to the editor area.
 - Improved the editing experience in WYSIWYG mode.
+
+---
+
+### v0.1.6
+- Fixed an issue where the cursor was not visible on empty lines in WYSIWYG mode.
+- Improved file management functionality: when opening a file outside the current directory, the file’s containing folder is now opened automatically.
+- Fixed a bug in v0.1.5 where the editor could not properly input code blocks.
+- Added outline (table of contents) support in WYSIWYG mode.
+- Adjusted the color scheme of toggle switches in the settings.
+- Attempted to fix an unresponsive freeze issue on Windows that could occur when launching certain menus.
+- Fixed blockquote rendering in WYSIWYG mode and added support for nested blockquote syntax.
+- Fixed an issue in WYSIWYG mode where pressing Enter in unordered lists caused duplicate syntax markers to appear.
+- Fixed an issue in split-view mode where the cursor was not visible on empty lines in the editor.
+- Improved cursor visibility when clicking outside of code blocks, where the cursor previously failed to appear.
+- Fixed an issue in WYSIWYG mode where entering Chinese characters inside code blocks caused the current line to be unexpectedly replaced.
+- Adjusted file management behavior so that after collapsing and re-expanding the root directory, all subdirectories are collapsed by default.
+- Fixed issues with abnormal behavior when opening files or folders via drag and drop.
+- Fixed an issue where Ctrl/Cmd+A or Select All only selected the visible content in split or WYSIWYG modes.
+- Fixed an issue where some content did not show the selection highlight when the document was fully selected.
+- Added heading level indicators (H1–H6) before each item in the floating table of contents.
+- Added a pin button to the floating table of contents to keep it open when focus is lost.
+- Added a sedentary reminder feature that tracks focused editing/reading time only, with system notifications, break/snooze/disable-for-today actions, and configurable intervals and break lengths.
+- Added Git commit file diff viewer in Source Control: click a file under a commit to compare the committed version with the current local file.
+- Added Ctrl/Cmd+F find bar for the editor with red highlights, while disabling find in pure preview mode.
+- Fixed an issue where content search highlights stayed after closing the file search panel.

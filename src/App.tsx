@@ -430,7 +430,7 @@ function HomePage(props: { openChangelog: () => void }) {
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 gap-10 items-center">
             <div className="max-w-4xl">
-              <h1 className="js-hero-title text-6xl md:text-8xl lg:text-9xl tracking-tighter font-semibold leading-[0.95] text-[var(--text-0)] mb-8">
+              <h1 className="js-hero-title text-6xl md:text-8xl lg:text-9xl tracking-tighter font-medium leading-[0.95] text-white mb-8 [font-family:var(--font-geist-pixel-square)]">
                 <BlurText
                   text={t.hero.titleLine1}
                   animateBy="words"
@@ -454,13 +454,13 @@ function HomePage(props: { openChangelog: () => void }) {
                 direction="top"
                 delay={60}
                 stepDuration={0.3}
-                className="js-hero-tagline text-sm md:text-base text-[var(--text-1)] max-w-md"
+                className="js-hero-tagline text-sm md:text-base text-white max-w-md"
               />
               <div className="js-hero-actions mt-10 flex gap-4 flex-wrap">
                 <a
                   href="#download"
-                  className="inline-flex items-center justify-center gap-2 transition-colors duration-300 text-sm font-medium tracking-wide bg-[var(--button-bg)] hover:bg-[var(--button-bg-hover)] px-8 py-4 rounded-[10px]"
-                  style={{ color: 'var(--button-text)' }}
+                  className="inline-flex items-center justify-center gap-2 transition-colors duration-300 text-sm font-medium tracking-wide bg-black hover:bg-black/90 px-8 py-4 rounded-[10px]"
+                  style={{ color: '#ffffff' }}
                 >
                   <Download className="w-4 h-4" />
                   {t.hero.primaryCta}
@@ -469,8 +469,8 @@ function HomePage(props: { openChangelog: () => void }) {
                   href="https://discord.gg/DrmTuEYk7n"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 transition-colors duration-300 text-sm font-medium tracking-wide bg-[var(--button-bg)] hover:bg-[var(--button-bg-hover)] px-8 py-4 rounded-[10px]"
-                  style={{ color: 'var(--button-text)' }}
+                  className="inline-flex items-center justify-center gap-2 transition-colors duration-300 text-sm font-medium tracking-wide bg-black hover:bg-black/90 px-8 py-4 rounded-[10px]"
+                  style={{ color: '#ffffff' }}
                 >
                   <svg
                     role="img"

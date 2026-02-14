@@ -75,3 +75,16 @@
 - Added Git commit file diff viewer in Source Control: click a file under a commit to compare the committed version with the current local file.
 - Added Ctrl/Cmd+F find bar for the editor with red highlights, while disabling find in pure preview mode.
 - Fixed an issue where content search highlights stayed after closing the file search panel.
+
+---
+
+### v0.1.7
+- Added a theme system with importable theme packages.
+- Added a “theme” system menu for switching between installed themes(Beta).
+- Added visual table insertion shortcuts to the editor right-click context menu.
+- Improved the table rendering and focus behavior in WYSIWYG mode when using the mouse.
+- Enhanced table interactions in WYSIWYG mode with quick alignment options (center, left, right) and a one-click table removal action.
+- Improved image interaction and rendering in WYSIWYG mode.
+- Improved the rendering and interaction experience of Mermaid diagrams in WYSIWYG mode.
+- Refactored the notification system implementation.
+- Moved the left-side menu icons to the bottom to free up more visual space in the workspace, further reinforcing a creation-first experience.
